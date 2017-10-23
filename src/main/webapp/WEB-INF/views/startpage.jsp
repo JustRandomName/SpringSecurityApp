@@ -32,7 +32,8 @@
             <span>${error}</span>
             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 
-            <button style="color: black" class="btn btn-lg btn-primary btn-block "  type="submit">Go</button>
+            <button class="btn btn-lg btn-primary btn-block"  type="submit">Go</button>
+            <span href="/twitter" class="twitter"></span>
             <h3 class="text-center"><a href="${contextPath}/registration">Create an account</a></h3>
         </div>
 

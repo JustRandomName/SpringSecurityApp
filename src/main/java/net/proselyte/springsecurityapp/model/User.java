@@ -2,6 +2,7 @@ package net.proselyte.springsecurityapp.model;
 
 import javax.persistence.*;
 import java.util.Set;
+import java.util.Collection;
 
 @Entity
 @Table(name = "users")
@@ -17,6 +18,12 @@ public class User {
     @Column(name = "password")
     private String password;
 
+    @Column(name = "name")
+    private String name;
+
+    @Column (name = "enabled")
+    private Boolean enabled;
+
     @Transient
     private String confirmPassword;
 
@@ -24,6 +31,23 @@ public class User {
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles;
+
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
 
     public Long getId() {
         return id;
@@ -64,4 +88,5 @@ public class User {
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
     }
+
 }

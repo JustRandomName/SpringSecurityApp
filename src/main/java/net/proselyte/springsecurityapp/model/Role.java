@@ -3,7 +3,7 @@ package net.proselyte.springsecurityapp.model;
 
 import javax.persistence.*;
 import java.util.Set;
-
+import java.util.Collection;
 
 @Entity
 @Table(name = "roles")
