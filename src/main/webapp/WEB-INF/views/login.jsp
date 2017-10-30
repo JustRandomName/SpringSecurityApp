@@ -1,4 +1,9 @@
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<c:set var="contextPath" value="${pageContext.request.contextPath}"/>
 
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
     <title>Title</title>
@@ -77,33 +82,24 @@
     </div>
 
     <div class="container">
-        <!-- Example row of columns -->
+        <!— Example row of columns —>
         <div class="row">
-            <div class="col-md-4">
-                <h2>Heading</h2>
-                <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-                <p><a class="btn btn-secondary" href="#" role="button">View more &raquo;</a></p>
-            </div>
-            <div class="col-md-4">
-                <h2>Heading</h2>
-                <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-                <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
-            </div>
-            <div class="col-md-4">
-                <h2>Heading</h2>
-                <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
-                <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
-            </div>
+            <c:forEach items="${information}" var="item">
+
+                <div style="overflow-x: hidden;" class="col-md-4">
+                    <h2>${item[0]}</h2>
+                    <h2>${item[2]}</h2>
+                    <p>${item[3]}</p>
+                    <p><a class="btn btn-info" href="#" role="button">View more &raquo;</a></p>
+                </div>
+            </c:forEach>
         </div>
 
         <hr>
 
-    </div> <!-- /container -->
+    </div>
 
 </main>
-<c:forEach items="${instructions}" var="item">
-    <h3>${item.content}</h3><br>
-</c:forEach>
 
 <!-- Bootstrap core JavaScript
 ================================================== -->

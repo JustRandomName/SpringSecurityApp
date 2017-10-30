@@ -1,3 +1,5 @@
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -44,7 +46,7 @@
     </div><!-- /.container-fluid -->
 </nav>
 
-<body>
+<body onload="addArea2()">
 
 <main role="main">
 
@@ -52,36 +54,54 @@
         <div class="container">
             <div>
                 <form action="" method="post">
-                    <p><b>Text you instraction</b></p>
-                    <p><textarea rows="2" cols="100" name="text"></textarea></p>
-                    <p><input type="submit" value="Save"></p>
+                    <p><b>Heading</b></p>
+                    <p><textarea minlength="3" maxlength="15" rows="2" cols="100" id="heading"></textarea></p>
                 </form>
 
             </div>
             <form action="" method="post">
-                <p><b>Text you instraction</b></p>
-                <p><textarea rows="10" cols="100" name="text"></textarea></p>
-                <p><input type="submit" value="Save"></p>
+                <p><b>Descriprtion</b></p>
+                <p><textarea style="background-color: #FFF;" minlength="3" maxlength="150" rows="10" cols="100" id="content"></textarea></p>
             </form>
         </div>
+        <p><button onclick="addInstruction()">Save</button></p>
     </div>
-
-
-
 </main>
-<div class="container">
-
-    <form:form method="POST" modelAttribute="instructionsForm">
-        <spring:bind path="content">
-            <div class="form-group ${status.error ? 'has-error' : ''}">
-                <form:input type="text" path="content" class="form-control" placeholder="LOLIKON"
-                            autofocus="true"></form:input>
-                <form:errors path="content"></form:errors>
-            </div>
-        </spring:bind>
-        <button class="btn btn-lg btn-primary btn-block" type="submit">Submit</button>
-    </form:form>
-
-</div>
 </body>
+<style type="text/css">
+    .nicEdit-main{
+        background: #FFF;
+    }
+</style>
+<script src="http://js.nicedit.com/nicEdit-latest.js" type="text/javascript"></script>
+<script type="text/javascript">
+    function addArea2() {
+        area2 = new nicEditor({fullPanel : true}).panelInstance('content');
+    }
+    function removeArea2() {
+        area2.removeInstance('content');
+        window.alert("LOP");
+    }
+</script>
+<script>
+    function addInstruction() {
+        removeArea2();
+        var heading=document.getElementById('heading');
+        var content=document.getElementById('content');
+        var owner=${currentId};
+
+        window.alert("suk");
+        window.alert(content.value);
+        $.ajax({
+            url: "/block",
+            type: 'GET',
+            data: ({
+                "heading": heading.value,
+                "content": content.value,
+                "owner":owner
+            })
+        });
+        window.location.replace("/login");
+    }
+</script>
 </html>

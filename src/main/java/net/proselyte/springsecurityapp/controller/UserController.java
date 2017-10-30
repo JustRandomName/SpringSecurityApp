@@ -20,9 +20,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import twitter4j.auth.AccessToken;
 import java.lang.String;
-
-
-
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 
 /*
@@ -92,6 +93,32 @@ public class UserController {
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String login(Model model, String error, String logout) {
+        try {
+            String myDriver = "com.mysql.jdbc.Driver";
+            String myUrl = "jdbc:mysql://localhost/project";
+            Class.forName(myDriver);
+            Connection conn = DriverManager.getConnection(myUrl, "root", "root");
+            String query = "select * from users, instructions where instructions.owner_id = users.id";
+            Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery(query);
+            rs.last();
+            String[][] information = new String[rs.getRow()][4];
+            System.out.format("%s\n", rs.getRow());
+            rs.first();
+            int i = 0;
+            do {
+                information[i][0] = rs.getString("username");
+                information[i][1] = rs.getString("name");
+                information[i][2] = rs.getString("heading");
+                information[i][3] = rs.getString("content");
+                i++;
+            }while (rs.next());
+            model.addAttribute("information", information);
+        } catch (Exception e) {
+            System.err.println("Got an exception! ");
+            System.err.println(e.getMessage());
+        }
+
         model.addAttribute("instructions", instructionsDao.findAll());
         if (error != null) {
             model.addAttribute("error", "Username or password is incorrect.");
