@@ -44,43 +44,35 @@
     </div><!-- /.container-fluid -->
 </nav>
 
-
-<body>
-
-
 <div class="container">
-
-    <form:form method="POST" modelAttribute="userForm" class="form-signin">
-        <h2 class="form-signin-heading">Create your account</h2>
-        <spring:bind path="username">
-            <div class="form-group ${status.error ? 'has-error' : ''}">
-                <form:input type="text" path="username" class="form-control" placeholder="Username"
-                            autofocus="true"></form:input>
-                <form:errors path="username"></form:errors>
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-heading"><h4>User Profile</h4></div>
+            <div class="panel-body">
+                <div class="col-md-4 col-xs-12 col-sm-6 col-lg-4">
+                    <img alt="User Pic"
+                         src="https://x1.xingassets.com/assets/frontend_minified/img/users/nobody_m.original.jpg"
+                         id="profile-image1" class="img-circle img-responsive">
+                </div>
+                <div class="col-md-8 col-xs-12 col-sm-6 col-lg-8">
+                    <div class="container">
+                        <h2>John Doe</h2>
+                        <p>an <b> Employee</b></p>
+                    </div>
+                    <hr>
+                    <ul class="container details">
+                        <li><p><span class="glyphicon glyphicon-user one" style="width:50px;"></span>i.rudberg</p></li>
+                        <li><p><span class="glyphicon glyphicon-envelope one" style="width:50px;"></span>somerandom@email.com
+                        </p></li>
+                    </ul>
+                    <hr>
+                    <div class="col-sm-5 col-xs-6 tital ">Date Of Joining: 15 Jun 2016</div>
+                </div>
             </div>
-        </spring:bind>
+        </div>
+    </div>
+    <script type="text/javascript">
 
-        <spring:bind path="password">
-            <div class="form-group ${status.error ? 'has-error' : ''}">
-                <form:input type="password" path="password" class="form-control" placeholder="Password"></form:input>
-                <form:errors path="password"></form:errors>
-            </div>
-        </spring:bind>
-
-        <spring:bind path="confirmPassword">
-            <div class="form-group ${status.error ? 'has-error' : ''}">
-                <form:input type="password" path="confirmPassword" class="form-control"
-                            placeholder="Confirm your password"></form:input>
-                <form:errors path="confirmPassword"></form:errors>
-            </div>
-            
-        </spring:bind>
-        <button class="btn btn-lg btn-primary btn-block" type="submit">Submit</button>
-    </form:form>
-
-</div>
-<!-- /container -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-<script src="${contextPath}/resources/js/bootstrap.min.js"></script>
+    </script>
 </body>
 </html>

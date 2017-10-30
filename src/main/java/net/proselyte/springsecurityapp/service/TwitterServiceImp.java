@@ -15,7 +15,7 @@ public class TwitterServiceImp implements TwitterService {
 
     public TwitterServiceImp() throws TwitterException {
         twitter = new TwitterFactory().getInstance();
-        twitter.setOAuthConsumer("wubSydqOjSp1YXn0nFWTsGUex", "AYNqEMwcMBDsGRAcHQpcVes4XGYSMBrpmvs7cK5bVNtegfQnTK");
+        twitter.setOAuthConsumer("IiVmRkVoBDVDjwjsZfC88J709", "jseuRs0vuqoy82WsLq2y0jYvf2DuDbjDZ6xrqOxnwz0VVBdNTc");
         requestToken = twitter.getOAuthRequestToken("http://localhost:8087/tw");
     }
 

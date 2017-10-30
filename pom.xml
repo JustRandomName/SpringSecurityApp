@@ -156,6 +156,26 @@
       <artifactId>twitter4j-core</artifactId>
       <version>4.0.6</version>
     </dependency>
+      <dependency>
+          <groupId>com.cloudinary</groupId>
+          <artifactId>cloudinary</artifactId>
+          <version>1.0.14</version>
+      </dependency>
+    <dependency>
+      <groupId>com.cloudinary</groupId>
+      <artifactId>cloudinary-core</artifactId>
+      <version>1.9.1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.cloudinary</groupId>
+      <artifactId>cloudinary-core</artifactId>
+      <version>1.9.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <version>20160810</version>
+    </dependency>
 
   </dependencies>
   <build>
