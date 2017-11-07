@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -29,7 +30,13 @@
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
-                <li><a class="navbar-brand" href="/startpage">Log In</a></li>
+
+                    <form id="logoutForm" method="POST" action="${contextPath}/logout" hidden>
+                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                    </form>
+
+                    <li><a class="navbar-brand"  onclick="document.forms['logoutForm'].submit()">Logout</a>
+                    </li>
                 <li><a class="navbar-brand" href="/userPage">Go to account</a></li>
             </ul>
             <form class="navbar-form navbar-right " role="search">
@@ -39,6 +46,9 @@
                 <button type="submit" class="btn btn-default">Search</button>
             </form>
             <ul class="nav navbar-nav navbar-right">
+                <c:if test= "${ROLE==2}">
+                    <li><a class="navbar-brand" href="/admin">Admin page</a></li>
+                </c:if>
             </ul>
         </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
@@ -56,16 +66,24 @@
                 </div>
                 <div class="col-md-8 col-xs-12 col-sm-6 col-lg-8">
                     <div class="container">
-                        <h2>John Doe</h2>
+                        <h2>${currentUsername}</h2>
                         <p>an <b> Employee</b></p>
+                        <a href="/seeInstractions/${currentUsername}">!!!!!!!!!!Q</a>
                     </div>
                     <hr>
                     <ul class="container details">
-                        <li><p><span class="glyphicon glyphicon-user one" style="width:50px;"></span>i.rudberg</p></li>
-                        <li><p><span class="glyphicon glyphicon-envelope one" style="width:50px;"></span>somerandom@email.com
+                        <li><p><span class="glyphicon glyphicon-user one" style="width:50px;"></span></p></li>
+                        <li><p><span class="glyphicon glyphicon-envelope one" style="width:50px;"></span>${userName}
                         </p></li>
                     </ul>
                     <hr>
+                    <c:forEach items="${instructions}" var="item">
+                        <div style="overflow-x: hidden;" class="col-md-4">
+                            <h2>${item.heading}</h2>
+                            <p><a class="btn btn-light" href="#" role="button" >View more</a></p>
+                        </div>
+
+                    </c:forEach>
                     <div class="col-sm-5 col-xs-6 tital ">Date Of Joining: 15 Jun 2016</div>
                 </div>
             </div>

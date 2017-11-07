@@ -64,24 +64,30 @@
 
         <div class="form-group ${error != null ? 'has-error' : ''}">
             <span>${message}</span>
+
             <input name="username" type="text" class="form-control" placeholder="Username"
                    autofocus="true"/>
             <input name="password" type="password" class="form-control" placeholder="Password"/>
             <span>${error}</span>
             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 
+
             <button class="btn btn-lg btn-primary btn-block" type="submit">Log In</button>
-
-            <span onclick="goToVK()" class="fa fa-vk fa-3x" style="color: cornflowerblue"></span>
-
-            <span onclick="goToTW()" class="fa fa-twitter fa-3x" style="color: #5bc0de"></span>
-
-            <span onclick="goToFK()" class="fa fa-facebook fa-3x" style="color: #337ab7"></span>
-
             <h4 class="text-center"><a href="${contextPath}/registration">Create an account</a></h4>
+            <h4 class="text-center"><a href="/inputEmail">Forgot password?</a></h4>
+            <a onclick="goToVK()" class="btn btn-info" style="color: cornflowerblue; width: auto">VK</a>
+
+            <a onclick="goToTW()" class="btn btn-info" style="color: #5bc0de; width: auto">Twitter</a>
+
+            <a onclick="goToFK()" class="btn btn-info" style="color: #337ab7; width: auto">Facebook</a>
+
         </div>
 
     </form>
+
+
+    <%--<span>${message}</span>--%>
+
 
 </div>
 <!-- /container -->

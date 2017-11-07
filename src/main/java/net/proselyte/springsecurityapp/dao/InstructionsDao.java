@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface InstructionsDao extends JpaRepository<Instructions, Long> {
     List<Instructions> findById(int id);
+    List<Instructions> findAllByOwnerId(int id);
 }

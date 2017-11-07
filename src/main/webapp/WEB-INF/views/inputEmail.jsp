@@ -1,18 +1,17 @@
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
     <meta charset="utf-8">
     <title></title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
-    <style type="text/css">
-
-    </style>
+    <style type="text/css"> </style>
+    <link href="${contextPath}/resources/css/common.css" rel="stylesheet">
     <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
 </head>
+
 <body>
 
 <nav class="navbar navbar-default " role="navigation">
@@ -41,50 +40,38 @@
                 <button type="submit" class="btn btn-default">Search</button>
             </form>
             <ul class="nav navbar-nav navbar-right">
+                <li><a href="#">Ссылка</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Действие</a></li>
+                        <li><a href="#">Другое действие</a></li>
+                        <li><a href="#">Что-то еще</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#">Отдельная ссылка</a></li>
+                    </ul>
+                </li>
             </ul>
         </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
 </nav>
 
-
-<body>
-
-
 <div class="container">
 
-    <form:form method="POST" modelAttribute="userForm" class="form-signin">
-        <h2 class="form-signin-heading">Create your account</h2>
-        <spring:bind path="username">
-            <div class="form-group ${status.error ? 'has-error' : ''}">
-                <form:input type="text" path="username" class="form-control" placeholder="Username"
-                            autofocus="true"></form:input>
-                <form:errors path="username"></form:errors>
-            </div>
-        </spring:bind>
-        <spring:bind path="name">
-            <div class="form-group ${status.error ? 'has-error' : ''}">
-                <form:input type="text" path="name" class="form-control" placeholder="Email"></form:input>
-                <form:errors path="name"></form:errors>
-            </div>
-        </spring:bind>
-        <spring:bind path="password">
-            <div class="form-group ${status.error ? 'has-error' : ''}">
-                <form:input type="password" path="password" class="form-control" placeholder="Password"></form:input>
-                <form:errors path="password"></form:errors>
-            </div>
-        </spring:bind>
+    <form method="POST" action="${contextPath}/createPass" class="form-signin">
+        <h2 class="form-heading">Log in</h2>
 
+        <div class="form-group ${error != null ? 'has-error' : ''}">
+            <span>${message}</span>
+            <input name="username" type="username" class="form-control" placeholder="Username"/>
+            <span>${error}</span>
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 
-        <spring:bind path="confirmPassword">
-            <div class="form-group ${status.error ? 'has-error' : ''}">
-                <form:input type="password" path="confirmPassword" class="form-control"
-                            placeholder="Confirm your password"></form:input>
-                <form:errors path="confirmPassword"></form:errors>
-            </div>
-            
-        </spring:bind>
-        <button class="btn btn-lg btn-primary btn-block" type="submit" >Submit</button>
-    </form:form>
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Log In</button>
+
+        </div>
+
+    </form>
 
 </div>
 <!-- /container -->

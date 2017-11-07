@@ -38,7 +38,7 @@ public class SecurityServiceImpl implements SecurityService {
 
     @Override
     public void autoLogin(String username, String password) {
-        if (userService.findByUsername(username).get(0).getEnabled()) {
+        if (userService.findByUsername(username).get(0).getEnabled()) { //блэт ты долбаеб
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
             UsernamePasswordAuthenticationToken authenticationToken =
                     new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());

@@ -44,8 +44,21 @@
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
+                <c:if test="${pageContext.request.userPrincipal.name == null}">
                 <li><a class="navbar-brand" href="/startpage">Log In</a></li>
+                </c:if>
+                <c:if test="${pageContext.request.userPrincipal.name != null}">
+                    <form id="logoutForm" method="POST" action="${contextPath}/logout" hidden>
+                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                    </form>
+
+                    <li><a class="navbar-brand"  onclick="document.forms['logoutForm'].submit()">Logout</a>
+                    </li>
+                    <%--style="padding:0px"--%>
+                </c:if>
+
                 <li><a class="navbar-brand" href="/userPage">Go to account</a></li>
+
             </ul>
             <form class="navbar-form navbar-right " role="search">
                 <div class="form-group">
@@ -53,6 +66,7 @@
                 </div>
                 <button type="submit" class="btn btn-default">Search</button>
             </form>
+
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="#">Ссылка</a></li>
                 <li class="dropdown">
@@ -90,7 +104,7 @@
                     <h2>${item[0]}</h2>
                     <h2>${item[2]}</h2>
                     <p>${item[3]}</p>
-                    <p><a class="btn btn-info" href="#" role="button">View more &raquo;</a></p>
+                    <p><a class="btn btn-info" href="#" role="button" onclick="viewInstructions(${item[4]})">View more</a></p>
                 </div>
             </c:forEach>
         </div>
@@ -117,6 +131,9 @@
         })
     }
 
+    function viewInstructions(current) {
+        window.location.replace("/viewInstruction/"+current+"/0");
+    }
 </script>
 
 </body>
