@@ -38,9 +38,13 @@ public class InstructionsController {
 
     @RequestMapping(value = "/createInstruction", method = RequestMethod.GET)
     public String add(Model model) {
+        try{
         User user = userService.findByUsername(((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()).get(0);
         model.addAttribute("currentId", user.getId());
-        return "createInstruction";
+        return "createInstruction";}
+        catch(Exception e) {
+            return "redirect:/login";
+        }
     }
 
     private Instructions instructions;
@@ -93,7 +97,22 @@ public class InstructionsController {
 
     @RequestMapping(value = "/searchInstructions", method = RequestMethod.GET)
     public String search(@RequestParam String search, Model model) {
-        List<Instructions> instructions = instructionsDao.findAllByContentOrHeadingContains(search, search);
+        List<Instructions> instructions = instructionsDao.findAllByHeadingContainsOrContentContains(search, search);
+        List<Step> steps=stepDao.findAllByHeadingContainsOrContentContainsOrderByInstructionsId(search,search);
+        for(int i=0;i<steps.size();i++)
+        {
+            boolean bool=false;
+            for(int j=0;j<instructions.size();j++)
+            {
+                if(instructions.get(j).getId()==steps.get(i).getInstructionsId())
+                {
+                    bool=true;
+                }
+            }
+            if(!bool){
+                instructions.add(instructionsDao.findById(steps.get(i).getInstructionsId()).get(0));
+            }
+        }
         model.addAttribute("instructions", instructions);
         return "/searchInstructions";
     }

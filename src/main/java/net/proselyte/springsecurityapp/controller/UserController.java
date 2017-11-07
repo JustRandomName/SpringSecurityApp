@@ -224,7 +224,7 @@ public class UserController {
             try {
                 String myDriver = "com.mysql.jdbc.Driver";
                 String myUrl = "jdbc:mysql://localhost/test0";
-                String sqlRequest = "select role_id from project.user_roles where user_id = " + user.getId() + ";";
+                String sqlRequest = "select role_id from test0.user_roles where user_id = " + user.getId() + ";";
                 Class.forName(myDriver);
                 Connection conn = DriverManager.getConnection(myUrl, "root", "baxa1234");
                 String query = sqlRequest;
@@ -239,7 +239,7 @@ public class UserController {
             }
 
         }catch (Exception e){
-            return "/startpage";
+            return "redirect:/startpage";
         }
 
         return "/userPage";
@@ -268,7 +268,7 @@ public class UserController {
 
         securityService.autoLogin(String.valueOf(accessToken.getUserId()), pas);
 
-        return "redirect:/welcome";
+        return "redirect:/userPage";
     }
 
 
@@ -279,13 +279,9 @@ public class UserController {
 
     @RequestMapping(value ="/facebook", method = RequestMethod.GET)
     public String facebook(){
-        return "redirect:https://www.facebook.com/v2.8/dialog/oauth?client_id=628809023972734&response_type=token&redirect_uri=http://localhost:8087/fk";
+        return "redirect:https://www.facebook.com/v2.8/dialog/oauth?client_id=628809023972734&response_type=token&redirect_uri=http://localhost:8087/fk1";
     }
 
-    @RequestMapping(value ="/fk", method = RequestMethod.GET)
-    public String fk(){
-        return "oops";
-    }
 
     @RequestMapping(value ="/fk1", method = RequestMethod.GET)
     public String fk1(String access_token){
@@ -306,7 +302,7 @@ public class UserController {
         }
 
         securityService.autoLogin(jSONObject.getString("id"), access_token);
-        return "redirect:/welcome";
+        return "redirect:/userPage";
     }
 
     @RequestMapping(value = "/example", method = RequestMethod.GET)
@@ -330,7 +326,7 @@ public class UserController {
         }
 
         securityService.autoLogin(String.valueOf(jSONObject.getLong("user_id")), pas);
-        return "redirect:/welcome";
+        return "redirect:/userPage";
     }
 
     public void createToken(){

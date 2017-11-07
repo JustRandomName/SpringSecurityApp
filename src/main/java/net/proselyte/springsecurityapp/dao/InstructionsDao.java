@@ -8,5 +8,5 @@ import java.util.List;
 public interface InstructionsDao extends JpaRepository<Instructions, Long> {
     List<Instructions> findById(Long id);
     List<Instructions> findAllByOwnerId(int id);
-    List<Instructions> findAllByContentOrHeadingContains(String content, String heading);
+    List<Instructions> findAllByHeadingContainsOrContentContains(String content, String heading);
 }

@@ -8,4 +8,5 @@ import java.util.List;
 public interface StepDao extends JpaRepository<Step,Long> {
     Step findById(int id);
     List<Step> findAllByInstructionsId(Long id);
+    List<Step> findAllByHeadingContainsOrContentContainsOrderByInstructionsId(String heading,String content);
 }
