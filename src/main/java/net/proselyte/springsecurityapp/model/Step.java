@@ -13,8 +13,17 @@ public class Step {
     private String content;
     @Column(name = "heading")
     private String heading;
+
+    public void setInstructionsId(Long instructionsId) {
+        this.instructionsId = instructionsId;
+    }
+
+    public Long getInstructionsId() {
+        return instructionsId;
+    }
+
     @Column(name = "instructions_id")
-    private int instructionsId;
+    private Long instructionsId;
     @Column(name="number")
     private int number;
 
@@ -50,11 +59,4 @@ public class Step {
         this.heading = heading;
     }
 
-    public int getInstructionsId() {
-        return instructionsId;
-    }
-
-    public void setInstructionsId(int instructionsId) {
-        this.instructionsId = instructionsId;
-    }
 }

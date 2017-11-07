@@ -17,5 +17,5 @@ public class InstructionsServiceImpl implements InstructionsService {
         instructionsDao.save(instruction);
     }
     @Override
-    public List<Instructions> findById(Integer id) {return instructionsDao.findById(id);}
+    public List<Instructions> findById(Long id) {return instructionsDao.findById(id);}
 }

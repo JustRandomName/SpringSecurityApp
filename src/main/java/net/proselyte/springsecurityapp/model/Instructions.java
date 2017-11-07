@@ -11,7 +11,7 @@ import java.util.List;
 public class Instructions {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
+    @Column(name = "instructionsId")
     private Long id;
     @Column(name = "content")
     private String content;

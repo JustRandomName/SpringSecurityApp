@@ -8,5 +8,5 @@ public interface InstructionsService {
 
     void save(Instructions instruction);
 
-    List<Instructions> findById(Integer id);
+    List<Instructions> findById(Long id);
 }

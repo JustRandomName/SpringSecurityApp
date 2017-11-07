@@ -24,15 +24,15 @@
         window.location.replace(0);
     }
     function hide(number) {
-        if(number===0){
+        if(number===undefined){
             var step=document.getElementsByClassName("step");
-            for(var i=0;i<step.length;i++) {
+            for(var i=0;i<=step.length;i++) {
                 step[i].style.display= 'none';
                 document.getElementById("prev").style.display='none';
             }
         }else{
             var steps=document.getElementsByClassName("steps");
-            if(number===${lastStep}-1){
+            if(number===${lastStep}){
                 document.getElementById("next").style.display='none';
             }
             for(var i=0;i<steps.length;i++) {
@@ -41,14 +41,20 @@
         }
     }
     function viewStep(number) {
-        window.alert(${contextPath});
+        // window.alert(${contextPath});
         window.location.replace(number);
     }
     function next(number) {
-        window.location.replace(number+1);
+        if(number===undefined)
+        {
+            window.location.replace(1);
+        }else {
+            window.location.replace(number + 1);
+        }
     }
     function prev(number) {
         window.location.replace(number-1);
     }
+
 </script>
 </html>

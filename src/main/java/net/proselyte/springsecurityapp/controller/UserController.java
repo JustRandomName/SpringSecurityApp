@@ -108,14 +108,14 @@ public class UserController {
     public String login(Model model, String error, String logout) {
         try {
             String myDriver = "com.mysql.jdbc.Driver";
-            String myUrl = "jdbc:mysql://localhost/project";
+            String myUrl = "jdbc:mysql://localhost/test0";
             Class.forName(myDriver);
-            Connection conn = DriverManager.getConnection(myUrl, "root", "root");
+            Connection conn = DriverManager.getConnection(myUrl, "root", "baxa1234");
             String query = "select * from users, instructions where instructions.owner_id = users.id";
             Statement st = conn.createStatement();
             ResultSet rs = st.executeQuery(query);
             rs.last();
-            String[][] information = new String[rs.getRow()][4];
+            String[][] information = new String[rs.getRow()][5];
             System.out.format("%s\n", rs.getRow());
             rs.first();
             int i = 0;
@@ -124,6 +124,7 @@ public class UserController {
                 information[i][1] = rs.getString("name");
                 information[i][2] = rs.getString("heading");
                 information[i][3] = rs.getString("content");
+                information[i][4] = rs.getString("instructionsId");
                 i++;
             }while (rs.next());
             model.addAttribute("information", information);
@@ -152,11 +153,11 @@ public class UserController {
 
         try {
             String myDriver = "com.mysql.jdbc.Driver";
-            String myUrl = "jdbc:mysql://localhost/project";
+            String myUrl = "jdbc:mysql://localhost/test0";
 
             Class.forName(myDriver);
             try {
-                Connection conn = DriverManager.getConnection(myUrl, "root", "root");
+                Connection conn = DriverManager.getConnection(myUrl, "root", "baxa1234");
                 Statement statement = conn.createStatement();
 
 
@@ -222,10 +223,10 @@ public class UserController {
             model.addAttribute("userName", user.getName());
             try {
                 String myDriver = "com.mysql.jdbc.Driver";
-                String myUrl = "jdbc:mysql://localhost/project";
+                String myUrl = "jdbc:mysql://localhost/test0";
                 String sqlRequest = "select role_id from project.user_roles where user_id = " + user.getId() + ";";
                 Class.forName(myDriver);
-                Connection conn = DriverManager.getConnection(myUrl, "root", "root");
+                Connection conn = DriverManager.getConnection(myUrl, "root", "baxa1234");
                 String query = sqlRequest;
                 Statement statement = conn.createStatement();
                 ResultSet resultSet = statement.executeQuery(query);
@@ -386,10 +387,10 @@ public class UserController {
         try {
             User user = userService.findByUsername(username).get(0);
             String myDriver = "com.mysql.jdbc.Driver";
-            String myUrl = "jdbc:mysql://localhost/project";
+            String myUrl = "jdbc:mysql://localhost/test0";
             String sqlRequest = "update project.user_roles set role_id=2 where user_id= " + user.getId() + ";";
             Class.forName(myDriver);
-            Connection conn = DriverManager.getConnection(myUrl, "root", "root");
+            Connection conn = DriverManager.getConnection(myUrl, "root", "baxa1234");
             String query = sqlRequest;
             Statement statement = conn.createStatement();
             statement.executeUpdate(query);

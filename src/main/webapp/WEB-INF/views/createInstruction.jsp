@@ -7,9 +7,13 @@
     <title></title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
-    <style type="text/css">
+    <!-- Include external CSS. -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.0/codemirror.min.css">
 
-    </style>
+    <!-- Include Editor style. -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.7.1/css/froala_editor.pkgd.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.7.1/css/froala_style.min.css" rel="stylesheet" type="text/css" />
     <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
 </head>
@@ -46,10 +50,7 @@
     </div><!-- /.container-fluid -->
 </nav>
 
-<body onload="addArea2()">
-
 <main role="main">
-
     <div class="jumbotron">
         <div class="container">
             <div>
@@ -59,49 +60,85 @@
                 </form>
 
             </div>
+
             <form action="" method="post">
                 <p><b>Descriprtion</b></p>
-                <p><textarea style="background-color: #FFF;" minlength="3" maxlength="150" rows="10" cols="100" id="content"></textarea></p>
+
+                <textarea style="background-color: #FFF;" minlength="3" maxlength="150" rows="10" cols="100" id="content"></textarea>
+                <br>
             </form>
+            <div id="steps"></div>
         </div>
-        <p><button onclick="addInstruction()">Save</button></p>
+
+        <p><button onclick="addInstruction();saveSteps()">Save</button></p>
+        <button onclick="addNewStep()" >AddNewStep</button>
     </div>
 </main>
-</body>
-<style type="text/css">
-    .nicEdit-main{
-        background: #FFF;
-    }
-</style>
-<script src="http://js.nicedit.com/nicEdit-latest.js" type="text/javascript"></script>
-<script type="text/javascript">
-    function addArea2() {
-        area2 = new nicEditor({fullPanel : true}).panelInstance('content');
-    }
-    function removeArea2() {
-        area2.removeInstance('content');
-        window.alert("LOP");
-    }
-</script>
+<!-- Include external JS libs. -->
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.0/codemirror.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.0/mode/xml/xml.min.js"></script>
+
+<!-- Include Editor JS files. -->
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.7.1/js/froala_editor.pkgd.min.js"></script>
+
+<!-- Initialize the editor. -->
 <script>
+    $(function() {
+        $('textarea#content').froalaEditor({
+            toolbarButtons: ['bold', 'italic', 'underline', 'strikeThrough', 'color', 'paragraphFormat', 'align', 'formatOL', 'formatUL', 'indent', 'outdent', '-', 'insertImage', 'insertLink', 'insertFile', 'insertVideo', 'undo', 'redo']
+        })
+    });
+</script>
+</body>
+<script src="http://js.nicedit.com/nicEdit-latest.js" type="text/javascript"></script>
+
+<script>
+    function saveSteps() {
+        var steps=document.getElementsByClassName('steps');
+        for(var i=0;i<steps.length;i++)
+        {
+            var str=steps[i].value;
+            window.alert(str);
+            $.ajax({
+                url: "/saveStep",
+                type: 'GET',
+                data: ({
+                    "number": i+1,
+                    "content":steps[i].value
+                })
+            });
+        }
+    }
     function addInstruction() {
-        removeArea2();
         var heading=document.getElementById('heading');
         var content=document.getElementById('content');
         var owner=${currentId};
-
-        window.alert("suk");
-        window.alert(content.value);
         $.ajax({
             url: "/block",
             type: 'GET',
             data: ({
                 "heading": heading.value,
                 "content": content.value,
-                "owner":owner
+                "owner":owner,
             })
         });
         window.location.replace("/login");
+    }
+    var number=1;
+    function addNewStep() {
+        var textarea= document.createElement("textarea");
+        textarea.className="steps";
+        var heading=document.createElement("h3");
+        heading.innerText="Step "+number;
+        var el=document.getElementById("steps");
+        el.appendChild(heading);
+        el.appendChild(textarea);
+        el.appendChild(document.createElement("br"));
+        $('textarea.steps').froalaEditor({
+            toolbarButtons: ['bold', 'italic', 'underline', 'strikeThrough', 'color', 'paragraphFormat', 'align', 'formatOL', 'formatUL', 'indent', 'outdent', '-', 'insertImage', 'insertLink', 'insertFile', 'insertVideo', 'undo', 'redo']
+        });
+        number++;
     }
 </script>
 </html>
