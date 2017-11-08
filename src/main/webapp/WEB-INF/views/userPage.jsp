@@ -89,8 +89,6 @@
             </div>
         </div>
     </div>
-    <script type="text/javascript">
-
-    </script>
+</div>
 </body>
 </html>

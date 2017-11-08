@@ -161,7 +161,7 @@ public class UserController {
                 Statement statement = conn.createStatement();
 
 
-                ResultSet resultSet1 = statement.executeQuery("SELECT * FROM project.user_roles;");
+                ResultSet resultSet1 = statement.executeQuery("SELECT * FROM test0.user_roles;");
                 resultSet1.last();
                 String roles[] = new String[resultSet1.getRow()];
                 int i = 0;
@@ -173,7 +173,7 @@ public class UserController {
                 }
 
 
-                ResultSet resultSet = statement.executeQuery("SELECT * FROM project.users;");
+                ResultSet resultSet = statement.executeQuery("SELECT * FROM test0.users;");
                 resultSet.last();
                 String userName[] = new String[resultSet.getRow()];
                 int crunch = resultSet.getRow()-1;
@@ -279,9 +279,13 @@ public class UserController {
 
     @RequestMapping(value ="/facebook", method = RequestMethod.GET)
     public String facebook(){
-        return "redirect:https://www.facebook.com/v2.8/dialog/oauth?client_id=628809023972734&response_type=token&redirect_uri=http://localhost:8087/fk1";
+        return "redirect:https://www.facebook.com/v2.8/dialog/oauth?client_id=628809023972734&response_type=token&redirect_uri=http://localhost:8087/fk";
     }
 
+    @RequestMapping(value ="/fk", method = RequestMethod.GET)
+    public String fk(){
+        return "oops";
+    }
 
     @RequestMapping(value ="/fk1", method = RequestMethod.GET)
     public String fk1(String access_token){
@@ -302,7 +306,7 @@ public class UserController {
         }
 
         securityService.autoLogin(jSONObject.getString("id"), access_token);
-        return "redirect:/userPage";
+        return "redirect:/welcome";
     }
 
     @RequestMapping(value = "/example", method = RequestMethod.GET)
@@ -384,7 +388,7 @@ public class UserController {
             User user = userService.findByUsername(username).get(0);
             String myDriver = "com.mysql.jdbc.Driver";
             String myUrl = "jdbc:mysql://localhost/test0";
-            String sqlRequest = "update project.user_roles set role_id=2 where user_id= " + user.getId() + ";";
+            String sqlRequest = "update test0.user_roles set role_id=2 where user_id= " + user.getId() + ";";
             Class.forName(myDriver);
             Connection conn = DriverManager.getConnection(myUrl, "root", "baxa1234");
             String query = sqlRequest;

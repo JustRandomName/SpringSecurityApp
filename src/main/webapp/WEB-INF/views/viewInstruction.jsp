@@ -18,7 +18,10 @@
 <button id="prev" onclick="prev(${currentStep.number})">Prev</button>
 <button id="next" onclick="next(${currentStep.number})">Next</button>
 <button id="first" onclick="first()">First</button>
+<p><textarea style="resize: none" rows="4" cols="100" id="comments"></textarea></p>
+<button onclick="addComment()">Comment</button>
 </body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 <script>
     function first() {
         window.location.replace(0);
@@ -55,6 +58,20 @@
     function prev(number) {
         window.location.replace(number-1);
     }
-
+function addComment() {
+        var el=document.getElementById("comments");
+        window.alert(el.value);
+    $.ajax({
+        url: "/addComment",
+        type: 'GET',
+        data: ({
+            "instructionsId": ${instruction.id},
+            "content":el.value
+        }),success:function (str) {
+            window.alert(str);
+        }
+    });
+    window.alert(el.value);
+}
 </script>
 </html>

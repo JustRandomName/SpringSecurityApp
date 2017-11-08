@@ -1,26 +1,21 @@
 package net.proselyte.springsecurityapp.controller;
 
-import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.pdf.PdfWriter;
-import com.itextpdf.text.pdf.collection.PdfCollection;
+import net.proselyte.springsecurityapp.dao.CommentsDao;
 import net.proselyte.springsecurityapp.dao.InstructionsDao;
 import net.proselyte.springsecurityapp.dao.StepDao;
 import net.proselyte.springsecurityapp.dao.UserDao;
+import net.proselyte.springsecurityapp.model.Comments;
 import net.proselyte.springsecurityapp.model.Instructions;
 import net.proselyte.springsecurityapp.model.Step;
 import net.proselyte.springsecurityapp.model.User;
 import net.proselyte.springsecurityapp.service.InstructionsService;
 import net.proselyte.springsecurityapp.service.StepService;
 import net.proselyte.springsecurityapp.service.UserService;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -116,5 +111,22 @@ public class InstructionsController {
         model.addAttribute("instructions", instructions);
         return "/searchInstructions";
     }
-
+    @Autowired
+    private CommentsDao commentsDao;
+    @RequestMapping(value = "/addComment",method = RequestMethod.GET)
+    public @ResponseBody String addComment(@RequestParam Long instructionsId,@RequestParam String content)
+    {
+        User user;
+        try {
+            user = userService.findByUsername(((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()).get(0);
+        }catch (Exception e){
+            return "User not found";
+        }
+        Comments comments=new Comments();
+        comments.setContent(content);
+        comments.setOwnerId(user.getId());
+        comments.setInstructionId(instructionsId);
+        commentsDao.save(comments);
+        return "Success";
+    }
 }
