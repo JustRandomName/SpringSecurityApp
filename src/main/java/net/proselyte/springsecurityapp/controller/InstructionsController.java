@@ -43,7 +43,7 @@ public class InstructionsController {
         model.addAttribute("currentId", user.getId());
         return "createInstruction";}
         catch(Exception e) {
-            return "redirect:/login";
+            return "redirect:/startpage";
         }
     }
 
@@ -115,6 +115,14 @@ public class InstructionsController {
         }
         model.addAttribute("instructions", instructions);
         return "/searchInstructions";
+    }
+
+    @RequestMapping(value = "/viewAllSteps/{inst_id}", method = RequestMethod.GET)
+    public  String viewAll(@PathVariable ("inst_id") Long inst_id, Model model){
+        List<Step> steps = stepDao.findAllByInstructionsId(inst_id);
+        model.addAttribute("id", inst_id);
+        model.addAttribute("Steps", steps);
+        return "/viewAllSteps";
     }
 
 }
