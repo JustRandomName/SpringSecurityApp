@@ -19,6 +19,18 @@ public class Instructions {
     private String heading;
     @Column(name = "owner_id")
     private int ownerId;
+    @Column(name = "rating")
+    private double rating;
+
+
+    public double getRating() {
+        return rating;
+    }
+
+    public void setRating(double rating) {
+        this.rating = rating;
+    }
+
 
     public int getOwnerId() {
         return ownerId;

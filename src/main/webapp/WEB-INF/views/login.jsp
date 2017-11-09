@@ -110,10 +110,9 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 <script>
     function viewInstructions(current) {
-        window.location.replace("/viewInstruction/"+current+"/0");
+        window.location.replace("/viewAllSteps/"+current);
     }
 </script>
-
 
 </body>
 </html>

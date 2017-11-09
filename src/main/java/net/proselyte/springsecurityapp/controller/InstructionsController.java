@@ -1,23 +1,22 @@
 package net.proselyte.springsecurityapp.controller;
 
-import net.proselyte.springsecurityapp.dao.CommentsDao;
-import net.proselyte.springsecurityapp.dao.InstructionsDao;
-import net.proselyte.springsecurityapp.dao.StepDao;
-import net.proselyte.springsecurityapp.dao.UserDao;
-import net.proselyte.springsecurityapp.model.Comments;
-import net.proselyte.springsecurityapp.model.Instructions;
-import net.proselyte.springsecurityapp.model.Step;
-import net.proselyte.springsecurityapp.model.User;
+import net.proselyte.springsecurityapp.dao.*;
+import net.proselyte.springsecurityapp.model.*;
 import net.proselyte.springsecurityapp.service.InstructionsService;
 import net.proselyte.springsecurityapp.service.StepService;
 import net.proselyte.springsecurityapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 @Controller
 public class InstructionsController {
@@ -76,6 +75,7 @@ public class InstructionsController {
         Instructions instructions = instructionsService.findById(current).get(0);
         model.addAttribute("instruction", instructions);
         List<Step> steps = stepDao.findAllByInstructionsId(current);
+        List<Comments> comments=commentsDao.findAllByInstructionId(current);
         model.addAttribute("steps", steps);
         if(step==0)
         {
@@ -84,6 +84,7 @@ public class InstructionsController {
             model.addAttribute("currentStep", steps.get(step-1));
         }
         model.addAttribute("lastStep", steps.size());
+        model.addAttribute("comments",comments);
         return "/viewInstruction";
     }
 
@@ -114,19 +115,104 @@ public class InstructionsController {
     @Autowired
     private CommentsDao commentsDao;
     @RequestMapping(value = "/addComment",method = RequestMethod.GET)
-    public @ResponseBody String addComment(@RequestParam Long instructionsId,@RequestParam String content)
+    public @ResponseBody int addComment(@RequestParam Long instructionsId,@RequestParam String content)
     {
         User user;
         try {
             user = userService.findByUsername(((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()).get(0);
         }catch (Exception e){
-            return "User not found";
+            return 0;
         }
         Comments comments=new Comments();
         comments.setContent(content);
         comments.setOwnerId(user.getId());
         comments.setInstructionId(instructionsId);
         commentsDao.save(comments);
-        return "Success";
+        return user.getId();
     }
+    @RequestMapping(value = "/viewAllSteps/{inst_id}", method = RequestMethod.GET)
+    public String viewAll(@PathVariable("inst_id") Long inst_id, Model model) {
+        List<Step> steps = stepDao.findAllByInstructionsId(inst_id);
+        model.addAttribute("id", inst_id);
+        model.addAttribute("Steps", steps);
+        return "/viewAllSteps";
+    }
+@Autowired
+private RatingDao ratingDao;
+
+    @RequestMapping(value = "/changeMark/{userId}/{instrId}", method = RequestMethod.GET)
+    public boolean changeMark(@PathVariable("userId") Long userId, @PathVariable("instrId") Long instrId, @RequestParam Long mark){
+        try{
+            Rating rating = ratingDao.findByUserId(userId);
+        }catch (Exception e) {
+            Rating rating = new Rating();
+            rating.setInstr_id(instrId);
+            rating.setUser_id(userId);
+            rating.setMark(mark);
+            ratingDao.save(rating);
+            return true;
+        }
+        return false;
+    }
+    @RequestMapping(value = "/addMark/{inst_id}", method = RequestMethod.GET)
+    public String addMark(@PathVariable("inst_id") Long inst_id, @RequestParam Long userId ,  Model model) {
+        try{
+            Rating rating = ratingDao.findByUserId(userId);
+            model.addAttribute("check", true);
+        }catch (Exception e){
+            Vector<Long> marks = ratingDao.findAllByInstrId(inst_id);
+            Long buffer = 0L;
+            for (int i = 0; i < marks.size(); i++) {
+                buffer += marks.get(i);
+            }
+            buffer = buffer / marks.size();
+            Instructions instructions = instructionsDao.findById(inst_id).get(0);
+            instructions.setRating(buffer);
+            instructionsDao.save(instructions);
+            model.addAttribute("Mark", buffer);
+            return "/viewAllSteps";
+        }
+        return "/viewAllSteps";
+    }
+
+    //    @RequestMapping(value = "setLike/{user_id}", method = RequestMethod.GET)
+//    public String setLikes(@PathVariable("user_id") Long user_id){
+//        try{
+//
+//            User user = likeDao.findByUser_id(user_id);
+//            //TODO: check user
+//        }catch (Exception e){
+//
+//        }
+//    }
+    @Autowired
+    private TagsDao tagsDao;
+    @RequestMapping(value = "/getTags", method = RequestMethod.GET)
+    @ResponseBody
+    public List<String> getTags(@RequestParam String tagName) {
+        return createList(tagName);
+    }
+
+    public List<String> createList(String tagNames) {
+        try {
+
+            List<String> buffer = new ArrayList<>();
+            List<Tags> tagsList = tagsDao.findAll();
+            for (int i = 0; i < tagsList.size(); i++) {
+                if (tagsList.get(i).getTag().contains(tagNames)) {
+                    buffer.add(tagsList.get(i).getTag());
+                    System.out.println(tagsList.get(i).getTag());
+                }
+            }
+            return buffer;
+        }catch (Exception e){
+            e.getMessage();
+        }
+        return null;
+    }
+
+//    @RequestMapping(value = "/addTag", method = RequestMethod.GET)
+//    public List<String> addtags(@RequestParam String tag){
+//
+//    }
 }

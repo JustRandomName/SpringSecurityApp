@@ -66,6 +66,12 @@
 
                 <textarea style="background-color: #FFF;" minlength="3" maxlength="150" rows="10" cols="100" id="content"></textarea>
                 <br>
+                <div>
+                    <input type="text"  id="w-input-search" style="size: auto">
+                    <span>
+			        <button id="w-button-search" type="button" onclick="addtags(document.getElementById('w-input-search').value)">Add Tag</button>
+		            </span>
+                </div>
             </form>
             <div id="steps"></div>
         </div>
@@ -78,7 +84,7 @@
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.0/codemirror.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.0/mode/xml/xml.min.js"></script>
-
+<script type="text/javascript" src="/resources/js/jquery.autocomplete.min.js"></script>
 <!-- Include Editor JS files. -->
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.7.1/js/froala_editor.pkgd.min.js"></script>
 
@@ -99,7 +105,6 @@
         for(var i=0;i<steps.length;i++)
         {
             var str=steps[i].value;
-            window.alert(str);
             $.ajax({
                 url: "/saveStep",
                 type: 'GET',
@@ -139,6 +144,30 @@
             toolbarButtons: ['bold', 'italic', 'underline', 'strikeThrough', 'color', 'paragraphFormat', 'align', 'formatOL', 'formatUL', 'indent', 'outdent', '-', 'insertImage', 'insertLink', 'insertFile', 'insertVideo', 'undo', 'redo']
         });
         number++;
+    }
+    $(document).ready(function() {
+
+        $('#w-input-search').autocomplete({
+            serviceUrl: '${pageContext.request.contextPath}/getTags',
+            paramName: "tagName",
+            delimiter: ",",
+            transformResult: function(response) {
+                return {
+
+                    suggestions: $.map($.parseJSON(response), function(response) {
+                        return { value: response, data: response };
+                    })
+                };
+            }
+        });
+    });
+    function addtags(TAG) {
+        window.alert(TAG)
+        $.ajax({
+            url: TAG + '/addTag',
+            paramName: "tagName",
+            type: 'GET'
+        })
     }
 </script>
 </html>

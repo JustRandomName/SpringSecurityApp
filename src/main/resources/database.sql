@@ -45,7 +45,8 @@ CREATE TABLE instructions(
   instructionsId INT  AUTO_INCREMENT PRIMARY KEY,
   heading VARCHAR(200)default NULL ,
   content VARCHAR(10000)default NULL,
-  owner_id INT
+  owner_id INT,
+  rating DOUBLE
 );
 CREATE TABLE step(
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -60,4 +61,31 @@ CREATE TABLE comments(
   instructions_id INT,
   owner_id INT
 );
-INSERT INTO instructions VALUES(1,'Head','Content',1);
+INSERT INTO instructions VALUES(1,'Head','Content',1,0);
+CREATE TABLE rating(
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  instr_id INT,
+  user_id INT,
+  mark INT
+);
+
+CREATE TABLE likes(
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  comment_id INT,
+  user_id INT
+);
+
+CREATE TABLE tags(
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  tag VARCHAR(100)
+);
+CREATE TABLE instTags(
+  instructionsId INT,
+  tagsId INT
+);
+INSERT INTO tags VALUES (1, 'Transport');
+INSERT INTO tags VALUES (2, 'Equipment');
+INSERT INTO tags VALUES (3, 'Cooking');
+INSERT INTO tags VALUES (4, 'Animals');
+INSERT INTO tags VALUES (5, 'Mine');
+INSERT INTO tags VALUES (6, 'Business');
