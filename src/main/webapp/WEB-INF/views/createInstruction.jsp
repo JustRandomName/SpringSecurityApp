@@ -1,5 +1,6 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -54,6 +55,7 @@
     <div class="jumbotron">
         <div class="container">
             <div>
+
                 <form action="" method="post">
                     <p><b>Heading</b></p>
                     <p><textarea minlength="3" maxlength="15" rows="2" cols="100" id="heading"></textarea></p>
@@ -75,6 +77,7 @@
             </form>
             <div id="steps"></div>
         </div>
+
 
         <p><button onclick="addInstruction();saveSteps()">Save</button></p>
         <button onclick="addNewStep()" >AddNewStep</button>
@@ -105,6 +108,7 @@
         for(var i=0;i<steps.length;i++)
         {
             var str=steps[i].value;
+            window.alert(str);
             $.ajax({
                 url: "/saveStep",
                 type: 'GET',
@@ -145,6 +149,7 @@
         });
         number++;
     }
+
     $(document).ready(function() {
 
         $('#w-input-search').autocomplete({
@@ -161,6 +166,7 @@
             }
         });
     });
+
     function addtags(TAG) {
         window.alert(TAG)
         $.ajax({
@@ -169,5 +175,6 @@
             type: 'GET'
         })
     }
+
 </script>
 </html>
