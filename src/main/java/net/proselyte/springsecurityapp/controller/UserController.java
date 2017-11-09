@@ -181,15 +181,15 @@ public class UserController {
                 resultSet.first();
                 while (resultSet.next()){
                     if(j == 0) resultSet.first();
-                    userName[j] = resultSet.getString("name");
-                    if(resultSet.getString("name") == null)System.out.println(13);
+                    userName[j] = resultSet.getString("username");
+                    if(resultSet.getString("username") == null)System.out.println(13);
                     if(j == crunch)break;
                     j++;
                 }
 
 
-                String inform[][] = new String[userName.length-1][2];
-                for(int k = 0; k < userName.length-1 ; k++){
+                String inform[][] = new String[userName.length][2];
+                for(int k = 0; k < userName.length ; k++){
                     inform[k][0] = roles[k];
                     inform[k][1] = userName[k];
                 }

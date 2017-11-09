@@ -68,7 +68,7 @@
                     <div class="container">
                         <h2>${currentUsername}</h2>
                         <p>an <b> Employee</b></p>
-                        <a href="/seeInstractions/${currentUsername}">!!!!!!!!!!Q</a>
+                        <a href="/seeInstructions/${currentUsername}">!!!!!!!!!!Q</a>
                     </div>
                     <hr>
                     <ul class="container details">

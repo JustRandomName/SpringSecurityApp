@@ -210,7 +210,51 @@ private RatingDao ratingDao;
         }
         return null;
     }
+    @RequestMapping(value = "/seeInstructions/{username}",method = RequestMethod.GET)
+    public String see(@PathVariable("username") String username,Model model)
+    {
+        User user=userService.findByUsername(username).get(0);
+        List<Instructions> instructions=instructionsDao.findAllByOwnerId(user.getId());
+        model.addAttribute("instructions",instructions);
+        return "/seeInstructions";
+    }
 
+    @RequestMapping(value="/editInstruction/{instructionId}",method = RequestMethod.GET)
+    public String edit(@PathVariable("instructionId") Long instructionId,Model model)
+    {
+        Instructions instructions=instructionsDao.findById(instructionId).get(0);
+        List<Step> steps=stepDao.findAllByInstructionsId(instructionId);
+        model.addAttribute("instruction",instructions);
+        model.addAttribute("steps",steps);
+        return "/editInstruction";
+    }
+    @RequestMapping(value="/editInstructions",method = RequestMethod.GET)
+    @ResponseBody
+    public  void editInstructions(@RequestParam Long instructionId,@RequestParam String heading,@RequestParam String content)
+    {
+        Instructions instructions=instructionsDao.findById(instructionId).get(0);
+        instructions.setHeading(heading);
+        instructions.setContent(content);
+        instructionsDao.save(instructions);
+    }
+    @RequestMapping(value="/editStep",method = RequestMethod.GET)
+    public void editStep(@RequestParam Long instructionId,@RequestParam int number,@RequestParam String content)
+    {
+        number--;
+        try{
+        List<Step> steps=stepDao.findAllByInstructionsId(instructionId);
+
+        steps.get(number).setContent(content);
+        stepDao.save(steps.get(number));}
+        catch (Exception e){
+            Step step=new Step();
+            step.setContent(content);
+            step.setInstructionsId(instructionId);
+            step.setNumber(number);
+            step.setHeading("LOL");
+            stepDao.save(step);
+        }
+    }
 //    @RequestMapping(value = "/addTag", method = RequestMethod.GET)
 //    public List<String> addtags(@RequestParam String tag){
 //
