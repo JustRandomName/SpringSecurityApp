@@ -1,3 +1,4 @@
+
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%--
   Created by IntelliJ IDEA.
@@ -20,6 +21,7 @@
     <script src = "/resources/js/pdfFromHTML.js"></script>
     <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+    <script src="/resources/js/bootstrap-rating.min.js"></script>
 </head>
 <body>
 
@@ -64,12 +66,13 @@
 </nav>
 
 <div>
-     <div id="HTMLtoPDF">
-         <input id="rating" type="hidden" class="rating" value="${naxyu}" />
-<c:forEach items="${Steps}" var="item">
-    <p> ${item.heading}</p>
-    <p> ${item.content}</p>
-</c:forEach>
+    <input id="rating" type="hidden" class="rating" value="${naxyu}" />
+
+    <div id="HTMLtoPDF">
+        <c:forEach items="${Steps}" var="item">
+            <p> ${item.heading}</p>
+            <p> ${item.content}</p>
+        </c:forEach>
 
     </div>
     <a href="#" onclick="HTMLtoPDF()">Download PDF</a>
@@ -77,8 +80,9 @@
 </div>
 
 </body>
-<script src="/resources/js/bootstrap-rating.min.js"></script>
+
 <script>
+
     $(function () {
         $('.rating').each(function () {
             $('<span class="label label-default"></span>')
@@ -86,25 +90,22 @@
                 .insertAfter(this);
         });
         $('.rating').on('change', function () {
-
+//            тута
             $.ajax({
                 url: "/changeMark",
                 type: "GET",
                 data:({
                     "userId": ${user},
                     "instrId": ${id},
-                    "mark": $(this).val()
-                }),success: function (mark) {
-                        window.alert(mark);
-                    document.getElementsByClassName("label")[0].innerText=mark;
-                }
+                    "mark": $(this).val(),
+                })
             });
             $(this).next('.label').text("${naxyu}");
-
         });
     });
-        function viewInstructions(current) {
-            window.location.replace("/viewInstruction/"+current+"/0");
-        }
+
+    function viewInstructions(current) {
+        window.location.replace("/viewInstruction/"+current+"/0");
+    }
 </script>
 </html>

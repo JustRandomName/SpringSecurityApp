@@ -6,14 +6,13 @@ import net.proselyte.springsecurityapp.service.InstructionsService;
 import net.proselyte.springsecurityapp.service.StepService;
 import net.proselyte.springsecurityapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.EOFException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -22,22 +21,28 @@ import java.util.Vector;
 public class InstructionsController {
 
     @Autowired
+    private StepDao stepDao;
+    @Autowired
     private InstructionsService instructionsService;
     @Autowired
     private StepService stepService;
     @Autowired
-    private UserDao userDao;
-    @Autowired
     private UserService userService;
+    @Autowired
+    private RatingDao ratingDao;
+//    @Autowired
+//    private LikeDao likeDao;
+    @Autowired
+    private TagsDao tagsDao;
 
     @RequestMapping(value = "/createInstruction", method = RequestMethod.GET)
     public String add(Model model) {
-        try{
-        User user = userService.findByUsername(((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()).get(0);
-        model.addAttribute("currentId", user.getId());
-        return "createInstruction";}
-        catch(Exception e) {
-            return "redirect:/login";
+        try {
+            User user = userService.findByUsername(((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()).get(0);
+            model.addAttribute("currentId", user.getId());
+            return "createInstruction";
+        } catch (Exception e) {
+            return "redirect:/startpage";
         }
     }
 
@@ -66,8 +71,6 @@ public class InstructionsController {
         stepService.save(step);
     }
 
-    @Autowired
-    private StepDao stepDao;
 
     @RequestMapping(value = "/viewInstruction/{current}/{step}", method = RequestMethod.GET)
     public String viewInstr(@PathVariable("current") Long current, @PathVariable int step, Model model) {
@@ -75,16 +78,13 @@ public class InstructionsController {
         Instructions instructions = instructionsService.findById(current).get(0);
         model.addAttribute("instruction", instructions);
         List<Step> steps = stepDao.findAllByInstructionsId(current);
-        List<Comments> comments=commentsDao.findAllByInstructionId(current);
         model.addAttribute("steps", steps);
-        if(step==0)
-        {
+        if (step == 0) {
             model.addAttribute("currentStep", null);
-        }else {
-            model.addAttribute("currentStep", steps.get(step-1));
+        } else {
+            model.addAttribute("currentStep", steps.get(step - 1));
         }
         model.addAttribute("lastStep", steps.size());
-        model.addAttribute("comments",comments);
         return "/viewInstruction";
     }
 
@@ -94,51 +94,32 @@ public class InstructionsController {
     @RequestMapping(value = "/searchInstructions", method = RequestMethod.GET)
     public String search(@RequestParam String search, Model model) {
         List<Instructions> instructions = instructionsDao.findAllByHeadingContainsOrContentContains(search, search);
-        List<Step> steps=stepDao.findAllByHeadingContainsOrContentContainsOrderByInstructionsId(search,search);
-        for(int i=0;i<steps.size();i++)
-        {
-            boolean bool=false;
-            for(int j=0;j<instructions.size();j++)
-            {
-                if(instructions.get(j).getId()==steps.get(i).getInstructionsId())
-                {
-                    bool=true;
+        List<Step> steps = stepDao.findAllByHeadingContainsOrContentContainsOrderByInstructionsId(search, search);
+        for (int i = 0; i < steps.size(); i++) {
+            boolean bool = false;
+            for (int j = 0; j < instructions.size(); j++) {
+                if (instructions.get(j).getId() == steps.get(i).getInstructionsId()) {
+                    bool = true;
                 }
             }
-            if(!bool){
+            if (!bool) {
                 instructions.add(instructionsDao.findById(steps.get(i).getInstructionsId()).get(0));
             }
         }
         model.addAttribute("instructions", instructions);
         return "/searchInstructions";
     }
-    @Autowired
-    private CommentsDao commentsDao;
-    @RequestMapping(value = "/addComment",method = RequestMethod.GET)
-    public @ResponseBody String addComment(@RequestParam Long instructionsId,@RequestParam String content)
-    {
-        User user;
-        try {
-            user = userService.findByUsername(((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()).get(0);
-        }catch (Exception e){
-            return "0";
-        }
-        Comments comments=new Comments();
-        comments.setContent(content);
-        comments.setOwnerId(user.getId());
-        comments.setInstructionId(instructionsId);
-        commentsDao.save(comments);
-        return comments.getId().toString();
-    }
+
     @RequestMapping(value = "/viewAllSteps/{inst_id}", method = RequestMethod.GET)
     public String viewAll(@PathVariable("inst_id") Long inst_id, Model model) {
         try {
             User user = userService.findByUsername(((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()).get(0);
             model.addAttribute("user", user.getId());
-        } catch (Exception e) {
+        }catch (Exception e){
             int i = 0;
             model.addAttribute("user", i);
         }
+
         List<Step> steps = stepDao.findAllByInstructionsId(inst_id);
         model.addAttribute("id", inst_id);
         model.addAttribute("Steps", steps);
@@ -146,46 +127,53 @@ public class InstructionsController {
         model.addAttribute("naxyu", buffer);
         return "/viewAllSteps";
     }
-    @Autowired
-    private RatingDao ratingDao;
+
     public int addMark(Long inst_id) {
-        List<Rating> marks = ratingDao.findAllByInstrId(inst_id);
-        int buffer = 0;
-        for (int i = 0; i < marks.size(); i++) {
-            buffer += marks.get(i).getMark();
-        }
-        if(marks.size()!=0) {
+            List<Rating> marks = ratingDao.findAllByInstrId(inst_id);
+            int buffer = 0;
+            for (int i = 0; i < marks.size(); i++) {
+                buffer += marks.get(i).getMark();
+            }
             buffer = buffer / marks.size();
-        }else{buffer=0;}
-        int i = Math.toIntExact(buffer);
+            int i = Math.toIntExact(buffer);
         return i;
     }
-    //ÐŸÑ€Ð¾Ð²ÐµÑ€ÑŒ ÑÐºÐ°Ð¹Ð¿. Ð¯ Ð¾Ñ‚Ð¾Ð¹Ð´Ñƒ Ð½Ð° Ð¿Ð°Ñ€Ñƒ Ð¼Ð¸Ð½ÑƒÑ‚
+    //Ïðîâåðü ñêàéï. ß îòîéäó íà ïàðó ìèíóò
 
     @RequestMapping(value = "/changeMark", method = RequestMethod.GET)
-    public @ResponseBody int changeMark(@RequestParam("userId") Long userId, @RequestParam("instrId") Long instrId, @RequestParam("mark") int mark, Model model) {
-        int k;
-        try {
-            Rating rating = ratingDao.findByUserIdAndInstrId(userId,instrId);
-            k = addMark(instrId);
+    public int changeMark(@RequestParam("userId") Long userId, @RequestParam("instrId") Long instrId, @RequestParam("mark") int mark, Model model){
+        try{
+            Rating rating = ratingDao.findByUserId(userId);
+            int k = addMark(instrId);
             model.addAttribute("val", k);
-            if (rating == null) {
+            if(rating == null) {
                 throw new Exception();
             }
-        } catch (Exception e) {
-
+        }catch (Exception e) {
+            try {
                 Rating rating = new Rating();
                 rating.setInstr_id(instrId);
                 rating.setUser_id(userId);
                 rating.setMark(mark);
                 ratingDao.save(rating);
+            }catch (Exception n){
+                n.getMessage();
+            }
         }
-        k=addMark(instrId);
-        return k;
+
+        return 0;
     }
 
-    @Autowired
-    private TagsDao tagsDao;
+    //    @RequestMapping(value = "setLike/{user_id}", method = RequestMethod.GET)
+//    public String setLikes(@PathVariable("user_id") Long user_id){
+//        try{
+//
+//            User user = likeDao.findByUser_id(user_id);
+//            //TODO: check user
+//        }catch (Exception e){
+//
+//        }
+//    }
     @RequestMapping(value = "/getTags", method = RequestMethod.GET)
     @ResponseBody
     public List<String> getTags(@RequestParam String tagName) {
@@ -209,80 +197,9 @@ public class InstructionsController {
         }
         return null;
     }
-    @RequestMapping(value = "/seeInstructions/{username}",method = RequestMethod.GET)
-    public String see(@PathVariable("username") String username,Model model)
-    {
-        User user=userService.findByUsername(username).get(0);
-        List<Instructions> instructions=instructionsDao.findAllByOwnerId(user.getId());
-        model.addAttribute("instructions",instructions);
-        return "/seeInstructions";
-    }
 
-    @RequestMapping(value="/editInstruction/{instructionId}",method = RequestMethod.GET)
-    public String edit(@PathVariable("instructionId") Long instructionId,Model model)
-    {
-        Instructions instructions=instructionsDao.findById(instructionId).get(0);
-        List<Step> steps=stepDao.findAllByInstructionsId(instructionId);
-        model.addAttribute("instruction",instructions);
-        model.addAttribute("steps",steps);
-        return "/editInstruction";
-    }
-    @RequestMapping(value="/editInstructions",method = RequestMethod.GET)
-    @ResponseBody
-    public  void editInstructions(@RequestParam Long instructionId,@RequestParam String heading,@RequestParam String content)
-    {
-        Instructions instructions=instructionsDao.findById(instructionId).get(0);
-        instructions.setHeading(heading);
-        instructions.setContent(content);
-        instructionsDao.save(instructions);
-    }
-    @RequestMapping(value="/editStep",method = RequestMethod.GET)
-    public void editStep(@RequestParam Long instructionId,@RequestParam int number,@RequestParam String content)
-    {
-        number--;
-        try{
-        List<Step> steps=stepDao.findAllByInstructionsId(instructionId);
-
-        steps.get(number).setContent(content);
-        stepDao.save(steps.get(number));}
-        catch (Exception e){
-            Step step=new Step();
-            step.setContent(content);
-            step.setInstructionsId(instructionId);
-            step.setNumber(number+1);
-            step.setHeading("LOL");
-            stepDao.save(step);
-        }
-    }
-    @RequestMapping(value="/deleteSteps",method = RequestMethod.GET)
-    public void deleteSteps(@RequestParam Long instructionId,@RequestParam int number)
-    {
-        List<Step> steps=stepDao.findAllByInstructionsId(instructionId);
-        for(int i=number;i<steps.size();i++) {
-            stepDao.delete(steps.get(i));
-        }
-    }
-    @Autowired
-    private LikeDao likeDao;
-    @RequestMapping(value="/addLike",method = RequestMethod.GET)
-    public @ResponseBody int addLike(@RequestParam Long commentId)
-    {
-        Comments comments=commentsDao.findById(commentId);
-        User user;
-        try {
-            user = userService.findByUsername(((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()).get(0);
-        }catch (Exception e){return 0;}
-            user = userService.findByUsername(((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()).get(0);
-            Like buf=likeDao.findByUserIdAndCommentId(user.getId(), commentId);
-        if(buf==null) {
-
-            comments.addLike();
-            commentsDao.save(comments);
-            Like like = new Like();
-            like.setCommentId(commentId);
-            like.setUserId(user.getId());
-            likeDao.save(like);
-        }
-        return comments.getLikes();
-    }
+//    @RequestMapping(value = "/addTag", method = RequestMethod.GET)
+//    public List<String> addtags(@RequestParam String tag){
+//
+//    }
 }
