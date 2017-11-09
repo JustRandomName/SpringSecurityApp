@@ -2,7 +2,6 @@ package net.proselyte.springsecurityapp.controller;
 
 
 import net.proselyte.springsecurityapp.dao.InstructionsDao;
-import net.proselyte.springsecurityapp.dao.StepDao;
 import net.proselyte.springsecurityapp.dao.UserDao;
 
 import net.proselyte.springsecurityapp.model.User;
@@ -32,7 +31,6 @@ public class UserController {
 
     @Autowired
     public JsonService jsonService ;
-
 
     @Autowired
     private TwitterService twitterService;
@@ -188,8 +186,8 @@ public class UserController {
                 }
 
 
-                String inform[][] = new String[userName.length-1][2];
-                for(int k = 0; k < userName.length-1 ; k++){
+                String inform[][] = new String[userName.length][2];
+                for(int k = 0; k < userName.length ; k++){
                     inform[k][0] = roles[k];
                     inform[k][1] = userName[k];
                 }

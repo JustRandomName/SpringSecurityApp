@@ -42,7 +42,18 @@
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
+                <c:if test="${pageContext.request.userPrincipal.name != null}">
+                    <form id="logoutForm" method="POST" action="${contextPath}/logout" hidden>
+                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                    </form>
+
+                    <li><a class="navbar-brand"  onclick="document.forms['logoutForm'].submit()">Logout</a>
+                    </li>
+                    <%--style="padding:0px"--%>
+                </c:if>
+                <c:if test="${pageContext.request.userPrincipal.name == null}">
                 <li><a class="navbar-brand" href="/startpage">Log In</a></li>
+                </c:if>
                 <li><a class="navbar-brand" href="/userPage">Go to account</a></li>
             </ul>
             <div class="navbar-form navbar-right " >
