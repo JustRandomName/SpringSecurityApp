@@ -62,9 +62,8 @@
 
                 <form action="" method="post">
                     <p><b>Heading</b></p>
-                    <p><textarea minlength="3" maxlength="15" rows="2" cols="100"
+                    <p><textarea style="resize: none" minlength="3" maxlength="15" rows="2" cols="100"
                                  id="heading">${instruction.heading}</textarea></p>
-                    <%--TODO:Static--%>
                 </form>
 
             </div>
@@ -95,7 +94,7 @@
 
 
         <p>
-            <button onclick="saveInstruction();saveSteps()">Save</button>
+            <button onclick="saveInstruction();">Save</button>
         </p>
         <button onclick="addNewStep()">AddNewStep</button>
     </div>
@@ -133,8 +132,9 @@
                 "instructionId":${instruction.id},
                 "heading": heading.value,
                 "content": content.value
-            })
+            }),
         });
+        saveSteps();
     }
     function saveSteps() {
         var steps = document.getElementsByClassName('steps');

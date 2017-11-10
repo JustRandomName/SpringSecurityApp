@@ -132,47 +132,56 @@ public class InstructionsController {
     }
     @RequestMapping(value = "/viewAllSteps/{inst_id}", method = RequestMethod.GET)
     public String viewAll(@PathVariable("inst_id") Long inst_id, Model model) {
+        try {
+            User user = userService.findByUsername(((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()).get(0);
+            model.addAttribute("user", user.getId());
+        } catch (Exception e) {
+            int i = 0;
+            model.addAttribute("user", i);
+        }
         List<Step> steps = stepDao.findAllByInstructionsId(inst_id);
         model.addAttribute("id", inst_id);
         model.addAttribute("Steps", steps);
+        int buffer = addMark(inst_id);
+        model.addAttribute("naxyu", buffer);
         return "/viewAllSteps";
     }
-@Autowired
-private RatingDao ratingDao;
-
-    @RequestMapping(value = "/changeMark/{userId}/{instrId}", method = RequestMethod.GET)
-    public boolean changeMark(@PathVariable("userId") Long userId, @PathVariable("instrId") Long instrId, @RequestParam Long mark){
-        try{
-            Rating rating = ratingDao.findByUserId(userId);
-        }catch (Exception e) {
-            Rating rating = new Rating();
-            rating.setInstr_id(instrId);
-            rating.setUser_id(userId);
-            rating.setMark(mark);
-            ratingDao.save(rating);
-            return true;
+    @Autowired
+    private RatingDao ratingDao;
+    public int addMark(Long inst_id) {
+        List<Rating> marks = ratingDao.findAllByInstrId(inst_id);
+        int buffer = 0;
+        for (int i = 0; i < marks.size(); i++) {
+            buffer += marks.get(i).getMark();
         }
-        return false;
-    }
-    @RequestMapping(value = "/addMark/{inst_id}", method = RequestMethod.GET)
-    public String addMark(@PathVariable("inst_id") Long inst_id, @RequestParam Long userId ,  Model model) {
-        try{
-            Rating rating = ratingDao.findByUserId(userId);
-            model.addAttribute("check", true);
-        }catch (Exception e){
-            Vector<Long> marks = ratingDao.findAllByInstrId(inst_id);
-            Long buffer = 0L;
-            for (int i = 0; i < marks.size(); i++) {
-                buffer += marks.get(i);
-            }
+        if(marks.size()!=0) {
             buffer = buffer / marks.size();
-            Instructions instructions = instructionsDao.findById(inst_id).get(0);
-            instructions.setRating(buffer);
-            instructionsDao.save(instructions);
-            model.addAttribute("Mark", buffer);
-            return "/viewAllSteps";
+        }else{buffer=0;}
+        int i = Math.toIntExact(buffer);
+        return i;
+    }
+    //Проверь скайп. Я отойду на пару минут
+
+    @RequestMapping(value = "/changeMark", method = RequestMethod.GET)
+    public @ResponseBody int changeMark(@RequestParam("userId") Long userId, @RequestParam("instrId") Long instrId, @RequestParam("mark") int mark, Model model) {
+        int k;
+        try {
+            Rating rating = ratingDao.findByUserIdAndInstrId(userId,instrId);
+            k = addMark(instrId);
+            model.addAttribute("val", k);
+            if (rating == null) {
+                throw new Exception();
+            }
+        } catch (Exception e) {
+
+                Rating rating = new Rating();
+                rating.setInstr_id(instrId);
+                rating.setUser_id(userId);
+                rating.setMark(mark);
+                ratingDao.save(rating);
         }
-        return "/viewAllSteps";
+        k=addMark(instrId);
+        return k;
     }
 
     //    @RequestMapping(value = "setLike/{user_id}", method = RequestMethod.GET)
@@ -250,7 +259,7 @@ private RatingDao ratingDao;
             Step step=new Step();
             step.setContent(content);
             step.setInstructionsId(instructionId);
-            step.setNumber(number);
+            step.setNumber(number+1);
             step.setHeading("LOL");
             stepDao.save(step);
         }

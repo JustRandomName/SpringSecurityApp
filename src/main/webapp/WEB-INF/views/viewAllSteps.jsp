@@ -65,6 +65,7 @@
 
 <div>
      <div id="HTMLtoPDF">
+         <input id="rating" type="hidden" class="rating" value="${naxyu}" />
 <c:forEach items="${Steps}" var="item">
     <p> ${item.heading}</p>
     <p> ${item.content}</p>
@@ -76,8 +77,32 @@
 </div>
 
 </body>
-
+<script src="/resources/js/bootstrap-rating.min.js"></script>
 <script>
+    $(function () {
+        $('.rating').each(function () {
+            $('<span class="label label-default"></span>')
+                .text("${naxyu}" || ' ')
+                .insertAfter(this);
+        });
+        $('.rating').on('change', function () {
+
+            $.ajax({
+                url: "/changeMark",
+                type: "GET",
+                data:({
+                    "userId": ${user},
+                    "instrId": ${id},
+                    "mark": $(this).val()
+                }),success: function (mark) {
+                        window.alert(mark);
+                    document.getElementsByClassName("label")[0].innerText=mark;
+                }
+            });
+            $(this).next('.label').text("${naxyu}");
+
+        });
+    });
         function viewInstructions(current) {
             window.location.replace("/viewInstruction/"+current+"/0");
         }

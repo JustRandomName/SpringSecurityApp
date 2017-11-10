@@ -58,14 +58,13 @@
 
                 <form action="" method="post">
                     <p><b>Heading</b></p>
-                    <p><textarea minlength="3" maxlength="15" rows="2" cols="100" id="heading"></textarea></p>
+                    <p><textarea  style="resize: none" minlength="3" maxlength="15" rows="2" cols="100" id="heading"></textarea></p>
                 </form>
 
             </div>
 
             <form action="" method="post">
                 <p><b>Descriprtion</b></p>
-
                 <textarea style="background-color: #FFF;" minlength="3" maxlength="150" rows="10" cols="100" id="content"></textarea>
                 <br>
                 <div>
@@ -129,7 +128,7 @@
             data: ({
                 "heading": heading.value,
                 "content": content.value,
-                "owner":owner,
+                "owner":owner
             })
         });
         window.location.replace("/login");
@@ -138,16 +137,44 @@
     function addNewStep() {
         var textarea= document.createElement("textarea");
         textarea.className="steps";
+        var div= document.createElement("div");
+        div.id="StepId"+number;
+        var delite= document.createElement("button");
+        delite.setAttribute('onclick','deleteStep('+number+')');
+        delite.innerText="Delete Step "+number;
+        delite.id="DeleteId"+number;
         var heading=document.createElement("h3");
         heading.innerText="Step "+number;
+        heading.id="Heading"+number;
         var el=document.getElementById("steps");
-        el.appendChild(heading);
-        el.appendChild(textarea);
-        el.appendChild(document.createElement("br"));
+        div.appendChild(heading);
+        div.appendChild(textarea);
+        div.appendChild(delite);
+        div.appendChild(document.createElement("br"));
+        el.appendChild(div);
         $('textarea.steps').froalaEditor({
             toolbarButtons: ['bold', 'italic', 'underline', 'strikeThrough', 'color', 'paragraphFormat', 'align', 'formatOL', 'formatUL', 'indent', 'outdent', '-', 'insertImage', 'insertLink', 'insertFile', 'insertVideo', 'undo', 'redo']
         });
         number++;
+    }
+    function deleteStep(namber) {
+        var el=document.getElementById("StepId"+namber);
+        el.remove();
+        number--;
+        for(var i=namber+1;i<=number;i++)
+        {
+            var heading=document.getElementById("Heading"+i);
+            heading.id="Heading"+(i-1);
+            heading.innerText="Step "+(i-1);
+            var delite=document.getElementById("DeleteId"+i);
+            delite.id="DeleteId"+(i-1);
+            delite.removeAttribute("onclick");
+            delite.setAttribute('onclick','deleteStep('+(i-1)+')');
+            delite.innerText="Delete Step "+(i-1);
+            var div=document.getElementById("StepId"+i);
+            div.id="StepId"+(i-1);
+        }
+        el.remove();
     }
 
     $(document).ready(function() {

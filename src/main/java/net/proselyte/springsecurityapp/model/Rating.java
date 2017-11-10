@@ -15,7 +15,7 @@ public class Rating {
     @Column(name = "instr_id")
     private Long instrId;
     @Column(name = "mark")
-    private Long mark;
+    private int mark;
 
     public int getRatingId() {
         return id;
@@ -41,11 +41,11 @@ public class Rating {
         this.instrId = instr_id;
     }
 
-    public double getMark() {
+    public int getMark() {
         return mark;
     }
 
-    public void setMark(Long mark) {
+    public void setMark(int mark) {
         this.mark = mark;
     }
 
