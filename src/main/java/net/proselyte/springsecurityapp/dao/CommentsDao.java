@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface CommentsDao extends JpaRepository<Comments, Long> {
     List<Comments> findAllByInstructionId(Long id);
+    Comments findById(Long id);
 }

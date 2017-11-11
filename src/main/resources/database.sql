@@ -59,7 +59,8 @@ CREATE TABLE comments(
   commentsId INT AUTO_INCREMENT PRIMARY KEY,
   content VARCHAR(1000),
   instructions_id INT,
-  owner_id INT
+  owner_id INT,
+  likes INT
 );
 INSERT INTO instructions VALUES(1,'Head','Content',1,0);
 CREATE TABLE rating(

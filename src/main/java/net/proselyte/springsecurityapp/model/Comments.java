@@ -15,6 +15,17 @@ import javax.persistence.*;
         private Long instructionId;
         @Column(name = "owner_id")
         private int ownerId;
+        @Column(name = "likes")
+        private int likes=0;
+        public int getLikes() {
+            return likes;
+        }
+
+        public void setLikes(int likes) {
+            this.likes = likes;
+        }
+
+
         public Long getId() {
             return id;
         }
@@ -46,6 +57,6 @@ import javax.persistence.*;
         public void setOwnerId(int ownerId) {
             this.ownerId = ownerId;
         }
-
+        public void addLike(){this.likes=getLikes()+1;}
 
 }

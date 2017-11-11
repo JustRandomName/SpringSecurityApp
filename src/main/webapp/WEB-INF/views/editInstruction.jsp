@@ -84,10 +84,12 @@
             </form>
             <div id="steps">
                 <c:forEach items="${steps}" var="item">
-                    <h3>Step ${item.number}</h3>
-                    <textarea class="steps" style="background-color: #FFF;" minlength="3" maxlength="150" rows="10" cols="100"
-                              id="content">${item.content}</textarea>
+                    <div id="StepId${item.number}">
+                    <h3 id="Heading${item.number}">Step ${item.number}</h3>
+                    <textarea class="steps">${item.content}</textarea>
+                        <button onclick="deleteStep(${item.number})" id="DeleteId${item.number}">Delete Step ${item.number}</button>
                     <br>
+                    </div>
                 </c:forEach>
             </div>
         </div>
@@ -115,12 +117,15 @@
     $(function () {
         $('textarea#content').froalaEditor({
             toolbarButtons: ['bold', 'italic', 'underline', 'strikeThrough', 'color', 'paragraphFormat', 'align', 'formatOL', 'formatUL', 'indent', 'outdent', '-', 'insertImage', 'insertLink', 'insertFile', 'insertVideo', 'undo', 'redo']
-        })
+        });
+        $('textarea.steps').froalaEditor({
+            toolbarButtons: ['bold', 'italic', 'underline', 'strikeThrough', 'color', 'paragraphFormat', 'align', 'formatOL', 'formatUL', 'indent', 'outdent', '-', 'insertImage', 'insertLink', 'insertFile', 'insertVideo', 'undo', 'redo']
+        });
     });
 </script>
 </body>
 <script src="http://js.nicedit.com/nicEdit-latest.js" type="text/javascript"></script>
-
+<script src="/resources/js/deleteStep.js" type="text/javascript"></script>
 <script>
     function saveInstruction() {
         var heading = document.getElementById('heading');
@@ -132,13 +137,13 @@
                 "instructionId":${instruction.id},
                 "heading": heading.value,
                 "content": content.value
-            }),
+            })
         });
         saveSteps();
     }
     function saveSteps() {
         var steps = document.getElementsByClassName('steps');
-        for (var i = 0; i <number; i++) {
+        for (var i = 0; i <steps.length; i++) {
             var str = steps[i].value;
             window.alert(str);
             $.ajax({
@@ -151,22 +156,17 @@
                 })
             });
         }
+        $.ajax({
+            url: "/deleteSteps",
+            type: 'GET',
+            data: ({
+                "number": steps.length,
+                "instructionId":${instruction.id},
+            })
+        });
     }
     var number = ${steps.size()}+1;
-    function addNewStep() {
-        var textarea = document.createElement("textarea");
-        textarea.className = "steps";
-        var heading = document.createElement("h3");
-        heading.innerText = "Step " + number;
-        var el = document.getElementById("steps");
-        el.appendChild(heading);
-        el.appendChild(textarea);
-        el.appendChild(document.createElement("br"));
-        $('textarea.steps').froalaEditor({
-            toolbarButtons: ['bold', 'italic', 'underline', 'strikeThrough', 'color', 'paragraphFormat', 'align', 'formatOL', 'formatUL', 'indent', 'outdent', '-', 'insertImage', 'insertLink', 'insertFile', 'insertVideo', 'undo', 'redo']
-        });
-        number++;
-    }
+
 
     $(document).ready(function () {
 
@@ -176,7 +176,6 @@
             delimiter: ",",
             transformResult: function (response) {
                 return {
-
                     suggestions: $.map($.parseJSON(response), function (response) {
                         return {value: response, data: response};
                     })

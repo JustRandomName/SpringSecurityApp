@@ -115,20 +115,20 @@ public class InstructionsController {
     @Autowired
     private CommentsDao commentsDao;
     @RequestMapping(value = "/addComment",method = RequestMethod.GET)
-    public @ResponseBody int addComment(@RequestParam Long instructionsId,@RequestParam String content)
+    public @ResponseBody String addComment(@RequestParam Long instructionsId,@RequestParam String content)
     {
         User user;
         try {
             user = userService.findByUsername(((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()).get(0);
         }catch (Exception e){
-            return 0;
+            return "0";
         }
         Comments comments=new Comments();
         comments.setContent(content);
         comments.setOwnerId(user.getId());
         comments.setInstructionId(instructionsId);
         commentsDao.save(comments);
-        return user.getId();
+        return comments.getId().toString();
     }
     @RequestMapping(value = "/viewAllSteps/{inst_id}", method = RequestMethod.GET)
     public String viewAll(@PathVariable("inst_id") Long inst_id, Model model) {
@@ -184,16 +184,6 @@ public class InstructionsController {
         return k;
     }
 
-    //    @RequestMapping(value = "setLike/{user_id}", method = RequestMethod.GET)
-//    public String setLikes(@PathVariable("user_id") Long user_id){
-//        try{
-//
-//            User user = likeDao.findByUser_id(user_id);
-//            //TODO: check user
-//        }catch (Exception e){
-//
-//        }
-//    }
     @Autowired
     private TagsDao tagsDao;
     @RequestMapping(value = "/getTags", method = RequestMethod.GET)
@@ -264,8 +254,35 @@ public class InstructionsController {
             stepDao.save(step);
         }
     }
-//    @RequestMapping(value = "/addTag", method = RequestMethod.GET)
-//    public List<String> addtags(@RequestParam String tag){
-//
-//    }
+    @RequestMapping(value="/deleteSteps",method = RequestMethod.GET)
+    public void deleteSteps(@RequestParam Long instructionId,@RequestParam int number)
+    {
+        List<Step> steps=stepDao.findAllByInstructionsId(instructionId);
+        for(int i=number;i<steps.size();i++) {
+            stepDao.delete(steps.get(i));
+        }
+    }
+    @Autowired
+    private LikeDao likeDao;
+    @RequestMapping(value="/addLike",method = RequestMethod.GET)
+    public @ResponseBody int addLike(@RequestParam Long commentId)
+    {
+        Comments comments=commentsDao.findById(commentId);
+        User user;
+        try {
+            user = userService.findByUsername(((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()).get(0);
+        }catch (Exception e){return 0;}
+            user = userService.findByUsername(((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()).get(0);
+            Like buf=likeDao.findByUserIdAndCommentId(user.getId(), commentId);
+        if(buf==null) {
+
+            comments.addLike();
+            commentsDao.save(comments);
+            Like like = new Like();
+            like.setCommentId(commentId);
+            like.setUserId(user.getId());
+            likeDao.save(like);
+        }
+        return comments.getLikes();
+    }
 }

@@ -24,6 +24,8 @@
 <div id="comments">
     <c:forEach items="${comments}" var="item">
         <p>${item.content}</p>
+        <p id="Likes${item.id}">${item.likes}</p>
+        <button onclick="addLike(${item.id})">Like</button>
     </c:forEach>
 </div>
 <p><textarea style="resize: none" rows="4" cols="100" id="comment"></textarea></p>
@@ -86,7 +88,21 @@
     function prev(number) {
         window.location.replace(number - 1);
     }
-
+    function addLike(commentId) {
+        $.ajax({
+            url: "/addLike",
+            type: 'GET',
+            data: ({
+                "commentId": commentId
+            }), success: function (str) {
+                if (str === 0) {
+                    window.alert("user not found")
+                } else {
+                    document.getElementById("Likes"+commentId).innerText=str;
+                }
+            }
+        });
+    }
 </script>
 
 </html>
