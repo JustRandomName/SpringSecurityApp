@@ -53,7 +53,7 @@
             </div>
 
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="#">Ссылка</a></li>
+                <li><a onclick="seeTags()">Tags cloud</a></li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
                     <ul class="dropdown-menu">
@@ -111,6 +111,11 @@
 <script>
     function viewInstructions(current) {
         window.location.replace("/viewAllSteps/"+current);
+    }
+</script>
+<script>
+    function seeTags() {
+        window.location.replace("/tag");
     }
 </script>
 

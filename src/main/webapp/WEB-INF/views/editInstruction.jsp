@@ -85,10 +85,10 @@
             <div id="steps">
                 <c:forEach items="${steps}" var="item">
                     <div id="StepId${item.number}">
-                    <h3 id="Heading${item.number}">Step ${item.number}</h3>
-                    <textarea class="steps">${item.content}</textarea>
+                        <h3 id="Heading${item.number}">Step ${item.number}</h3>
+                        <textarea class="steps">${item.content}</textarea>
                         <button onclick="deleteStep(${item.number})" id="DeleteId${item.number}">Delete Step ${item.number}</button>
-                    <br>
+                        <br>
                     </div>
                 </c:forEach>
             </div>

@@ -108,10 +108,10 @@ public class UserController {
     public String login(Model model, String error, String logout) {
         try {
             String myDriver = "com.mysql.jdbc.Driver";
-            String myUrl = "jdbc:mysql://localhost/test0";
+            String myUrl = "jdbc:mysql://localhost/project";
             Class.forName(myDriver);
-            Connection conn = DriverManager.getConnection(myUrl, "root", "baxa1234");
-            String query = "select * from users, instructions where instructions.owner_id = users.id";
+            Connection conn = DriverManager.getConnection(myUrl, "root", "root");
+            String query = "select * from project.users, instructions where instructions.owner_id = users.id";
             Statement st = conn.createStatement();
             ResultSet rs = st.executeQuery(query);
             rs.last();
@@ -153,15 +153,15 @@ public class UserController {
 
         try {
             String myDriver = "com.mysql.jdbc.Driver";
-            String myUrl = "jdbc:mysql://localhost/test0";
+            String myUrl = "jdbc:mysql://localhost/project";
 
             Class.forName(myDriver);
             try {
-                Connection conn = DriverManager.getConnection(myUrl, "root", "baxa1234");
+                Connection conn = DriverManager.getConnection(myUrl, "root", "root");
                 Statement statement = conn.createStatement();
 
 
-                ResultSet resultSet1 = statement.executeQuery("SELECT * FROM test0.user_roles;");
+                ResultSet resultSet1 = statement.executeQuery("SELECT * FROM project.user_roles;");
                 resultSet1.last();
                 String roles[] = new String[resultSet1.getRow()];
                 int i = 0;
@@ -173,7 +173,7 @@ public class UserController {
                 }
 
 
-                ResultSet resultSet = statement.executeQuery("SELECT * FROM test0.users;");
+                ResultSet resultSet = statement.executeQuery("SELECT * FROM project.users;");
                 resultSet.last();
                 String userName[] = new String[resultSet.getRow()];
                 int crunch = resultSet.getRow()-1;
@@ -223,10 +223,10 @@ public class UserController {
             model.addAttribute("userName", user.getName());
             try {
                 String myDriver = "com.mysql.jdbc.Driver";
-                String myUrl = "jdbc:mysql://localhost/test0";
-                String sqlRequest = "select role_id from test0.user_roles where user_id = " + user.getId() + ";";
+                String myUrl = "jdbc:mysql://localhost/project";
+                String sqlRequest = "select role_id from project.user_roles where user_id = " + user.getId() + ";";
                 Class.forName(myDriver);
-                Connection conn = DriverManager.getConnection(myUrl, "root", "baxa1234");
+                Connection conn = DriverManager.getConnection(myUrl, "root", "root");
                 String query = sqlRequest;
                 Statement statement = conn.createStatement();
                 ResultSet resultSet = statement.executeQuery(query);
@@ -387,10 +387,10 @@ public class UserController {
         try {
             User user = userService.findByUsername(username).get(0);
             String myDriver = "com.mysql.jdbc.Driver";
-            String myUrl = "jdbc:mysql://localhost/test0";
-            String sqlRequest = "update test0.user_roles set role_id=2 where user_id= " + user.getId() + ";";
+            String myUrl = "jdbc:mysql://localhost/project";
+            String sqlRequest = "update project.user_roles set role_id=2 where user_id= " + user.getId() + ";";
             Class.forName(myDriver);
-            Connection conn = DriverManager.getConnection(myUrl, "root", "baxa1234");
+            Connection conn = DriverManager.getConnection(myUrl, "root", "root");
             String query = sqlRequest;
             Statement statement = conn.createStatement();
             statement.executeUpdate(query);
@@ -398,5 +398,4 @@ public class UserController {
             e.printStackTrace();
         }
     }
-
  }

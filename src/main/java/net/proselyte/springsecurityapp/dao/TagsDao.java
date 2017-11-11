@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface TagsDao  extends JpaRepository<Tags, Long> {
     List<Tags> findAll();
+
 }

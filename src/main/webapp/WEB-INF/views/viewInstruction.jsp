@@ -95,6 +95,7 @@
             data: ({
                 "commentId": commentId
             }), success: function (str) {
+                window.alert(str);
                 if (str === 0) {
                     window.alert("user not found")
                 } else {

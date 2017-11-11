@@ -7,18 +7,21 @@
     <meta charset="utf-8">
     <title></title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:url" content="https://selectize.github.io/selectize.js/" />
     <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
     <!-- Include external CSS. -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.0/codemirror.min.css">
 
     <!-- Include Editor style. -->
+    <link href = "/resources/css/selectize.bootstrap3.css" rel="stylesheet", type="text/css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.7.1/css/froala_editor.pkgd.min.css" rel="stylesheet" type="text/css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.7.1/css/froala_style.min.css" rel="stylesheet" type="text/css" />
     <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+    <script src ="/resources/js/selectize.min.js"></script>
 </head>
-<body>
+<body >
 
 <nav class="navbar navbar-default " role="navigation">
     <div class="container-fluid">
@@ -58,22 +61,44 @@
 
                 <form action="" method="post">
                     <p><b>Heading</b></p>
-                    <p><textarea  style="resize: none" minlength="3" maxlength="15" rows="2" cols="100" id="heading"></textarea></p>
+                    <p><textarea minlength="3" maxlength="15" rows="2" cols="100" id="heading"></textarea></p>
                 </form>
 
             </div>
 
             <form action="" method="post">
                 <p><b>Descriprtion</b></p>
+
                 <textarea style="background-color: #FFF;" minlength="3" maxlength="150" rows="10" cols="100" id="content"></textarea>
                 <br>
-                <div>
-                    <input type="text"  id="w-input-search" style="size: auto">
-                    <span>
-			        <button id="w-button-search" type="button" onclick="addtags(document.getElementById('w-input-search').value)">Add Tag</button>
-		            </span>
-                </div>
             </form>
+            <div class="demo">
+                <h2>&lt;select multiple&gt;</h2>
+                <div class="control-group">
+                    <label for="select-state">States:</label>
+                    <select id="select-state" name="state[]" multiple class="demo-default" style="width:50%" placeholder="Select a state...">
+                        <c:forEach items="${tags}" var="item">
+                        <option value="${item}">${item}</option>
+                        </c:forEach>
+                    </select>
+                </div>
+                <script>
+                    var i = 0;
+                    var mas = [];
+                    var tags;
+                    var $select = $('#select-state').selectize({
+                        onChange: function (value) {
+                            mas[i] = value;
+                            window.alert(mas);
+                        },
+                        create: true
+                    });
+
+                </script>
+                <button onclick="option()">111</button>
+            </div>
+
+
             <div id="steps"></div>
         </div>
 
@@ -89,6 +114,8 @@
 <script type="text/javascript" src="/resources/js/jquery.autocomplete.min.js"></script>
 <!-- Include Editor JS files. -->
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.7.1/js/froala_editor.pkgd.min.js"></script>
+<script type="text/javascript" src ="/resources/js/selectize.min.js"></script>
+<script src="/resources/js/deleteStep.js" type="text/javascript"></script>
 
 <!-- Initialize the editor. -->
 <script>
@@ -100,8 +127,9 @@
 </script>
 </body>
 <script src="http://js.nicedit.com/nicEdit-latest.js" type="text/javascript"></script>
-<script src="/resources/js/deleteStep.js" type="text/javascript"></script>
+
 <script>
+
     function saveSteps() {
         var steps=document.getElementsByClassName('steps');
         for(var i=0;i<steps.length;i++)
@@ -122,46 +150,20 @@
         var heading=document.getElementById('heading');
         var content=document.getElementById('content');
         var owner=${currentId};
+        tags = mas.join('1');
         $.ajax({
             url: "/block",
             type: 'GET',
             data: ({
                 "heading": heading.value,
                 "content": content.value,
-                "owner":owner
+                "owner":   owner,
+                "tags": tags
             })
         });
         window.location.replace("/login");
     }
     var number=1;
-
-
-
-    $(document).ready(function() {
-
-        $('#w-input-search').autocomplete({
-            serviceUrl: '${pageContext.request.contextPath}/getTags',
-            paramName: "tagName",
-            delimiter: ",",
-            transformResult: function(response) {
-                return {
-
-                    suggestions: $.map($.parseJSON(response), function(response) {
-                        return { value: response, data: response };
-                    })
-                };
-            }
-        });
-    });
-
-    function addtags(TAG) {
-        window.alert(TAG)
-        $.ajax({
-            url: TAG + '/addTag',
-            paramName: "tagName",
-            type: 'GET'
-        })
-    }
 
 </script>
 </html>

@@ -63,6 +63,7 @@ CREATE TABLE comments(
   likes INT
 );
 INSERT INTO instructions VALUES(1,'Head','Content',1,0);
+
 CREATE TABLE rating(
   id INT AUTO_INCREMENT PRIMARY KEY,
   instr_id INT,
@@ -78,15 +79,23 @@ CREATE TABLE likes(
 
 CREATE TABLE tags(
   id INT AUTO_INCREMENT PRIMARY KEY,
-  tag VARCHAR(100)
+  tag VARCHAR(100),
+  counter INT
 );
+
+CREATE TABLE intrTags(
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  tagName varchar(50),
+  instrId INT
+);
+
 CREATE TABLE instTags(
   instructionsId INT,
   tagsId INT
 );
-INSERT INTO tags VALUES (1, 'Transport');
-INSERT INTO tags VALUES (2, 'Equipment');
-INSERT INTO tags VALUES (3, 'Cooking');
-INSERT INTO tags VALUES (4, 'Animals');
-INSERT INTO tags VALUES (5, 'Mine');
-INSERT INTO tags VALUES (6, 'Business');
+INSERT INTO tags VALUES (1, 'Transport', 1);
+INSERT INTO tags VALUES (2, 'Equipment', 1);
+INSERT INTO tags VALUES (3, 'Cooking', 1);
+INSERT INTO tags VALUES (4, 'Animals', 1);
+INSERT INTO tags VALUES (5, 'Mine', 1);
+INSERT INTO tags VALUES (6, 'Business', 1);

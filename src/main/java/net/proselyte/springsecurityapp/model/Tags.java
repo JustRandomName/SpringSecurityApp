@@ -12,6 +12,17 @@ public class Tags {
     @Column(name = "tag")
     private String tag;
 
+    public int getCounter() {
+        return counter;
+    }
+
+    public void setCounter(int counter) {
+        this.counter = counter;
+    }
+
+    @Column(name = "counter")
+    private int counter;
+
     public Long getId() {
         return id;
     }
@@ -27,4 +38,6 @@ public class Tags {
     public void setTag(String tag) {
         this.tag = tag;
     }
+
+
 }

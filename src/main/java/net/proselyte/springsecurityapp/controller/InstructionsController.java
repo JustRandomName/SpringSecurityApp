@@ -12,10 +12,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.EOFException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
+
 
 @Controller
 public class InstructionsController {
@@ -30,14 +30,110 @@ public class InstructionsController {
     private UserService userService;
     @Autowired
     private RatingDao ratingDao;
-//    @Autowired
+    //    @Autowired
 //    private LikeDao likeDao;
     @Autowired
     private TagsDao tagsDao;
+    @Autowired
+    private InstrTagDao instrTagDao;
+
+    @RequestMapping(value = "/tag", method = RequestMethod.GET)
+    public String tagsCloud(Model model){
+        List<Tags> tags = tagsDao.findAll();
+        Vector<String> tag = new Vector<>();
+        Vector<Integer> counter = new Vector<>();
+        for(int i = 0; i < tags.size(); i++){
+            tag.add(tags.get(i).getTag());
+            counter.add(tags.get(i).getCounter());
+        }
+        model.addAttribute("counter", counter);
+        model.addAttribute("tagsCloud", tag);
+        return "/tag";
+    }
+
+    @RequestMapping(value = "/seeInstructions/{username}",method = RequestMethod.GET)
+    public String see(@PathVariable("username") String username,Model model)
+    {
+        User user=userService.findByUsername(username).get(0);
+        List<Instructions> instructions=instructionsDao.findAllByOwnerId(user.getId());
+        model.addAttribute("instructions",instructions);
+        return "/seeInstructions";
+    }
+    @RequestMapping(value="/editInstruction/{instructionId}",method = RequestMethod.GET)
+    public String edit(@PathVariable("instructionId") Long instructionId,Model model)
+    {
+        Instructions instructions=instructionsDao.findById(instructionId).get(0);
+        List<Step> steps=stepDao.findAllByInstructionsId(instructionId);
+        model.addAttribute("instruction",instructions);
+        model.addAttribute("steps",steps);
+        return "/editInstruction";
+    }
+    @RequestMapping(value="/editInstructions",method = RequestMethod.GET)
+    @ResponseBody
+    public  void editInstructions(@RequestParam Long instructionId,@RequestParam String heading,@RequestParam String content) {
+        Instructions instructions=instructionsDao.findById(instructionId).get(0);
+        instructions.setHeading(heading);
+        instructions.setContent(content);
+        instructionsDao.save(instructions);
+    }
+
+    @RequestMapping(value="/editStep",method = RequestMethod.GET)
+    public void editStep(@RequestParam Long instructionId,@RequestParam int number,@RequestParam String content) {
+        number--;
+        try{
+            List<Step> steps=stepDao.findAllByInstructionsId(instructionId);
+
+            steps.get(number).setContent(content);
+            stepDao.save(steps.get(number));}
+        catch (Exception e){
+            Step step=new Step();
+            step.setContent(content);
+            step.setInstructionsId(instructionId);
+            step.setNumber(number+1);
+            step.setHeading("LOL");
+            stepDao.save(step);
+        }
+    }
+    @Autowired
+    private LikeDao likeDao;
+    @RequestMapping(value="/addLike",method = RequestMethod.GET)
+    public @ResponseBody int addLike(@RequestParam Long commentId) {
+        Comments comments=commentsDao.findById(commentId);
+        User user;
+        try {
+            user = userService.findByUsername(((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()).get(0);
+        }catch (Exception e){return 0;}
+        user = userService.findByUsername(((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()).get(0);
+        Like buf=likeDao.findByUserIdAndCommentId(user.getId(), commentId);
+        if(buf==null) {
+
+            comments.addLike();
+            commentsDao.save(comments);
+            Like like = new Like();
+            like.setCommentId(commentId);
+            like.setUserId(user.getId());
+            likeDao.save(like);
+        }
+        return comments.getLikes();
+    }
+    @RequestMapping(value="/deleteSteps",method = RequestMethod.GET)
+    public void deleteSteps(@RequestParam Long instructionId,@RequestParam int number)
+    {
+        List<Step> steps=stepDao.findAllByInstructionsId(instructionId);
+        for(int i=number;i<steps.size();i++) {
+            stepDao.delete(steps.get(i));
+        }
+    }
 
     @RequestMapping(value = "/createInstruction", method = RequestMethod.GET)
     public String add(Model model) {
         try {
+            List<Tags> tagsList = tagsDao.findAll();
+            String[] arr = new String[tagsList.size()];
+            for(int i  = 0; i < tagsList.size(); i++){
+                arr[i] = tagsList.get(i).getTag();
+            }
+            model.addAttribute("tags", arr);
             User user = userService.findByUsername(((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()).get(0);
             model.addAttribute("currentId", user.getId());
             return "createInstruction";
@@ -51,12 +147,63 @@ public class InstructionsController {
     //----------------
     @RequestMapping(value = "/block", method = RequestMethod.GET)
     public @ResponseBody
-    void block(@RequestParam String heading, @RequestParam String content, @RequestParam Integer owner) {
+    void block(@RequestParam String heading, @RequestParam String content, @RequestParam Integer owner, @RequestParam("tags") String tags) {
+        String[] tg =setTags(tags);
+        checkTags(tg);
         instructions = new Instructions();
         instructions.setHeading(heading);
         instructions.setContent(content);
         instructions.setOwnerId(owner);
         instructionsService.save(instructions);
+        saveTag(Math.toIntExact(instructions.getId()), tg);
+
+    }
+
+    private void saveTag(int instrId, String[] tags){
+        for(int i = 0; i<tags.length; i++){
+            InstrTag instrTag = new InstrTag();
+            instrTag.setTagName(tags[i]);
+            instrTag.setInstrId(instrId);
+            instrTagDao.save(instrTag);
+        }
+    }
+
+    private String[] setTags(String tags){
+        return tags.split(",");
+    }
+
+    private void checkTags(String[] tags){
+        List<Tags> tagsList = tagsDao.findAll();
+        for(int i = 0; i < tags.length; i++){
+            for(int j = 0; j < tagsList.size(); j++ ){
+                boolean k = tags[i].equals(tagsList.get(j).getTag());
+                if(k == true) break;
+                if( (j == tagsList.size()-1) & (k == false) ){
+                  Tags tags1 = new Tags();
+                  tags1.setTag(tags[i]);
+                  tagsDao.save(tags1);
+                }
+            }
+        }
+    }
+
+    @Autowired
+    private CommentsDao commentsDao;
+    @RequestMapping(value = "/addComment",method = RequestMethod.GET)
+    public @ResponseBody String addComment(@RequestParam Long instructionsId,@RequestParam String content)
+    {
+        User user;
+        try {
+            user = userService.findByUsername(((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()).get(0);
+        }catch (Exception e){
+            return "0";
+        }
+        Comments comments=new Comments();
+        comments.setContent(content);
+        comments.setOwnerId(user.getId());
+        comments.setInstructionId(instructionsId);
+        commentsDao.save(comments);
+        return comments.getId().toString();
     }
 
     //----------------
@@ -78,13 +225,16 @@ public class InstructionsController {
         Instructions instructions = instructionsService.findById(current).get(0);
         model.addAttribute("instruction", instructions);
         List<Step> steps = stepDao.findAllByInstructionsId(current);
+        List<Comments> comments=commentsDao.findAllByInstructionId(current);
         model.addAttribute("steps", steps);
-        if (step == 0) {
+        if(step==0)
+        {
             model.addAttribute("currentStep", null);
-        } else {
-            model.addAttribute("currentStep", steps.get(step - 1));
+        }else {
+            model.addAttribute("currentStep", steps.get(step-1));
         }
         model.addAttribute("lastStep", steps.size());
+        model.addAttribute("comments",comments);
         return "/viewInstruction";
     }
 
@@ -115,11 +265,10 @@ public class InstructionsController {
         try {
             User user = userService.findByUsername(((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()).get(0);
             model.addAttribute("user", user.getId());
-        }catch (Exception e){
+        } catch (Exception e) {
             int i = 0;
             model.addAttribute("user", i);
         }
-
         List<Step> steps = stepDao.findAllByInstructionsId(inst_id);
         model.addAttribute("id", inst_id);
         model.addAttribute("Steps", steps);
@@ -128,78 +277,55 @@ public class InstructionsController {
         return "/viewAllSteps";
     }
 
-    public int addMark(Long inst_id) {
-            List<Rating> marks = ratingDao.findAllByInstrId(inst_id);
-            int buffer = 0;
-            for (int i = 0; i < marks.size(); i++) {
-                buffer += marks.get(i).getMark();
-            }
+    private int addMark(Long inst_id) {
+        List<Rating> marks = ratingDao.findAllByInstrId(inst_id);
+
+        int buffer = 0;
+        for (int i = 0; i < marks.size(); i++) {
+            buffer += marks.get(i).getMark();
+        }
+        if(marks.size() != 0) {
             buffer = buffer / marks.size();
-            int i = Math.toIntExact(buffer);
-        return i;
+        }
+        return Math.toIntExact(buffer);
     }
-    //Проверь скайп. Я отойду на пару минут
 
     @RequestMapping(value = "/changeMark", method = RequestMethod.GET)
-    public int changeMark(@RequestParam("userId") Long userId, @RequestParam("instrId") Long instrId, @RequestParam("mark") int mark, Model model){
-        try{
-            Rating rating = ratingDao.findByUserId(userId);
-            int k = addMark(instrId);
+    public @ResponseBody int changeMark(@RequestParam("userId") Long userId, @RequestParam("instrId") Long instrId, @RequestParam("mark") int mark, Model model) {
+        int k;
+        try {
+            Rating rating = ratingDao.findByUserIdAndInstrId(userId,instrId);
+            k = addMark(instrId);
             model.addAttribute("val", k);
-            if(rating == null) {
+            if (rating == null) {
                 throw new Exception();
             }
-        }catch (Exception e) {
-            try {
-                Rating rating = new Rating();
-                rating.setInstr_id(instrId);
-                rating.setUser_id(userId);
-                rating.setMark(mark);
-                ratingDao.save(rating);
-            }catch (Exception n){
-                n.getMessage();
-            }
-        }
+        } catch (Exception e) {
 
-        return 0;
+            Rating rating = new Rating();
+            rating.setInstr_id(instrId);
+            rating.setUser_id(userId);
+            rating.setMark(mark);
+            ratingDao.save(rating);
+        }
+        k=addMark(instrId);
+        return k;
     }
 
-    //    @RequestMapping(value = "setLike/{user_id}", method = RequestMethod.GET)
-//    public String setLikes(@PathVariable("user_id") Long user_id){
-//        try{
-//
-//            User user = likeDao.findByUser_id(user_id);
-//            //TODO: check user
-//        }catch (Exception e){
-//
-//        }
-//    }
-    @RequestMapping(value = "/getTags", method = RequestMethod.GET)
+    @RequestMapping(value = "/findInstructions", method = RequestMethod.GET)
     @ResponseBody
-    public List<String> getTags(@RequestParam String tagName) {
-        return createList(tagName);
-    }
-
-    public List<String> createList(String tagNames) {
-        try {
-
-            List<String> buffer = new ArrayList<>();
-            List<Tags> tagsList = tagsDao.findAll();
-            for (int i = 0; i < tagsList.size(); i++) {
-                if (tagsList.get(i).getTag().contains(tagNames)) {
-                    buffer.add(tagsList.get(i).getTag());
-                    System.out.println(tagsList.get(i).getTag());
-                }
-            }
-            return buffer;
-        }catch (Exception e){
-            e.getMessage();
+    public Vector<Instructions> findInstructions (@RequestParam("tags") String tags, Model model) {
+        List<InstrTag> tagsList = instrTagDao.findAllByTagName(tags);
+        Vector<Long> instructionsVector = new Vector<>();
+        for (InstrTag aTagsList : tagsList) {
+            instructionsVector.add(Long.valueOf(aTagsList.getInstrId()));
         }
-        return null;
+        Vector<Instructions> instructions = new Vector<>();
+        for(int i = 0; i < instructionsVector.size(); i++){
+            instructions.add(instructionsDao.findAllById(instructionsVector.get(i)));
+        }
+        return instructions;
     }
 
-//    @RequestMapping(value = "/addTag", method = RequestMethod.GET)
-//    public List<String> addtags(@RequestParam String tag){
-//
-//    }
+
 }

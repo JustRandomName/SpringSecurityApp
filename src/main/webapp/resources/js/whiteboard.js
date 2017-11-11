@@ -7,7 +7,7 @@
 
 
 function defineComment(content,instructionId,commentId) {
-window.alert(instructionId);
+    window.alert(instructionId);
     var json = JSON.stringify({
         "content": content,
         "instructionId": instructionId,
