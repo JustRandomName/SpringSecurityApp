@@ -25,6 +25,7 @@
     <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
     <script src="/resources/js/selectize.min.js"></script>
+    <script type="text/javascript" src="/resources/js/search.js"></script>
 </head>
 <nav class="navbar navbar-default " role="navigation">
     <div class="container-fluid">
@@ -43,41 +44,27 @@
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
-                <c:if test="${pageContext.request.userPrincipal.name == null}">
-                    <li><a class="navbar-brand" href="/startpage">Log In</a></li>
-                </c:if>
                 <c:if test="${pageContext.request.userPrincipal.name != null}">
                     <form id="logoutForm" method="POST" action="${contextPath}/logout" hidden>
                         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                     </form>
-
-                    <li><a class="navbar-brand" onclick="document.forms['logoutForm'].submit()">Logout</a>
+                    <li><a class="navbar-brand" style="cursor: pointer" onclick="document.forms['logoutForm'].submit()">Logout</a>
                     </li>
-                    <%--style="padding:0px"--%>
                 </c:if>
-
+                <c:if test="${pageContext.request.userPrincipal.name == null}">
+                    <li><a class="navbar-brand" href="/startpage">Log In</a></li>
+                </c:if>
                 <li><a class="navbar-brand" href="/userPage">Go to account</a></li>
-
             </ul>
-            <form class="navbar-form navbar-right " role="search">
+            <div class="navbar-form navbar-right ">
                 <div class="form-group">
-                    <input type="text" class="form-control" placeholder="Search">
+                    <input id="search" type="text" class="form-control" placeholder="Search">
                 </div>
-                <button type="submit" class="btn btn-default">Search</button>
-            </form>
+                <button class="btn btn-default" onclick="searchInstructions()">Search</button>
+            </div>
 
             <ul class="nav navbar-nav navbar-right">
-
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#">Действие</a></li>
-                        <li><a href="#">Другое действие</a></li>
-                        <li><a href="#">Что-то еще</a></li>
-                        <li class="divider"></li>
-                        <li><a href="#">Отдельная ссылка</a></li>
-                    </ul>
-                </li>
+                <li><a class="navbar-brand" onclick="seeTags()" style="cursor: pointer">Tags cloud</a></li>
             </ul>
         </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
@@ -96,6 +83,8 @@
                     <option value="${item}">${item}</option>
                 </c:forEach>
             </select>
+            <div id="searches">
+            </div>
         </div>
         <script>
             var i = 0;
@@ -113,7 +102,11 @@
                         data: ({
                             "tags": tags
                         }), success: function (arr) {
-                            var el = document.getElementById('select');
+                                document.getElementById("searches").remove();
+                                var searches=document.createElement("div");
+                                searches.id="searches";
+                                document.getElementById("select").appendChild(searches);
+                            var el = document.getElementById('searches');
                             for (var i = 0; i < arr.length; i++) {
                                 var el1 = document.createElement('div');
                                 var heading = document.createElement('p');

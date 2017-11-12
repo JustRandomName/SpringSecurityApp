@@ -88,11 +88,6 @@ CREATE TABLE intrTags(
   tagName varchar(50),
   instrId INT
 );
-
-CREATE TABLE instTags(
-  instructionsId INT,
-  tagsId INT
-);
 INSERT INTO tags VALUES (1, 'Transport', 1);
 INSERT INTO tags VALUES (2, 'Equipment', 1);
 INSERT INTO tags VALUES (3, 'Cooking', 1);

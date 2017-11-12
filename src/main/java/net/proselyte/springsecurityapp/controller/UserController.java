@@ -80,7 +80,7 @@ public class UserController {
 
     @RequestMapping(value = {"/confirmation{user}"}, method = RequestMethod.GET)
     public String Confirmation (@PathVariable("user")String user){
-        return "redirect:/welcome";
+        return "redirect:/userPage";
     }
 
     @RequestMapping(value = "/registration", method = RequestMethod.POST)
@@ -92,7 +92,7 @@ public class UserController {
             token = "";
             createToken();
             Sender sender=new Sender("tester19990908@gmail.com","warhammer43");
-            sender.send(userForm.getUsername(), "Вы зарегистрировались http://localhost:8087/varification/" + token + "/" + userForm.getUsername(),"tester19990908@gmail.com",userForm.getUsername());
+            sender.send(userForm.getUsername(), "пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ http://localhost:8087/varification/" + token + "/" + userForm.getUsername(),"tester19990908@gmail.com",userForm.getUsername());
             userForm.setEnabled(Boolean.FALSE);
             userService.save(userForm);
             return "/sendMessage";
@@ -143,10 +143,6 @@ public class UserController {
         return "login";
     }
 
-    @RequestMapping(value = {"/", "/welcome"}, method = RequestMethod.GET)
-    public String welcome(Model model) {
-        return "welcome";
-    }
 
     @RequestMapping(value = "/admin", method = RequestMethod.GET)
     public String admin(Model model) {
@@ -306,7 +302,7 @@ public class UserController {
         }
 
         securityService.autoLogin(jSONObject.getString("id"), access_token);
-        return "redirect:/welcome";
+        return "redirect:/userPage";
     }
 
     @RequestMapping(value = "/example", method = RequestMethod.GET)
@@ -344,8 +340,7 @@ public class UserController {
     public String varification(@PathVariable("token") String token_1, @PathVariable("userName") String userName_1){
         if (token_1.equals(token)){
             token = "";
-            userName_1 +=".com";
-            User user = userService.findByUsername(userName_1).get(0);
+            User user = userService.findByUsernameContains(userName_1);
             user.setEnabled(Boolean.TRUE);
             userDao.save(user);
             return "/applyVarification";
@@ -358,7 +353,7 @@ public class UserController {
         createToken();
         userNameForRePass ="";
         Sender sender=new Sender("tester19990908@gmail.com","warhammer43");
-        sender.send(username, "Ссылка для сброса пароля http://localhost:8087/newPass/" + token + "/" + username,"tester19990908@gmail.com",username);
+        sender.send(username, "пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ http://localhost:8087/newPass/" + token + "/" + username,"tester19990908@gmail.com",username);
         return "/sendMessage";
     }
 
@@ -366,14 +361,14 @@ public class UserController {
     public String createNewPass(@PathVariable("token") String token_1, @PathVariable("userName") String userName_1){
         if (token_1.equals(token)){
             token = "";
-            userNameForRePass +=userName_1 + ".com";
+            userNameForRePass +=userName_1;
             return "/newPassword";
         }else return "error";
     }
 
     @RequestMapping(value = "/newPassword", method = RequestMethod.POST)
     public String changePassword(String password){
-        User user = userService.findByUsername(userNameForRePass).get(0);
+        User user = userService.findByUsernameContains(userNameForRePass);
         user.setPassword(password);
         userService.save(user);
         return "/startpage";
@@ -397,5 +392,13 @@ public class UserController {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
+    }
+    @RequestMapping(value = "/user/{username}",method = RequestMethod.GET)
+    public String user(@PathVariable("username") String username,Model model)
+    {
+        User user=userDao.findByUsername(username).get(0);
+        model.addAttribute("userName", user.getName());
+        model.addAttribute("currentUsername",user.getUsername());
+        return "/user";
     }
  }

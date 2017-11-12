@@ -12,8 +12,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 
@@ -54,10 +59,37 @@ public class InstructionsController {
     @RequestMapping(value = "/seeInstructions/{username}",method = RequestMethod.GET)
     public String see(@PathVariable("username") String username,Model model)
     {
-        User user=userService.findByUsername(username).get(0);
-        List<Instructions> instructions=instructionsDao.findAllByOwnerId(user.getId());
-        model.addAttribute("instructions",instructions);
-        return "/seeInstructions";
+        User curruser;
+        int i=0;
+        try {
+             curruser = userService.findByUsername(((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()).get(0);
+            try {
+                String myDriver = "com.mysql.jdbc.Driver";
+                String myUrl = "jdbc:mysql://localhost/project";
+                String sqlRequest = "select role_id from project.user_roles where user_id = " + curruser.getId() + ";";
+                Class.forName(myDriver);
+                Connection conn = DriverManager.getConnection(myUrl, "root", "root");
+                String query = sqlRequest;
+                Statement statement = conn.createStatement();
+                ResultSet resultSet = statement.executeQuery(query);
+                resultSet.last();
+                resultSet.getRow();
+                i = resultSet.getInt("role_id");
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+
+        }catch (Exception e){
+            return "redirect:/startpage";
+        }
+
+            User user = userService.findByUsername(username).get(0);
+        if(i==2||(curruser.getId()==user.getId())) {
+            List<Instructions> instructions = instructionsDao.findAllByOwnerId(user.getId());
+            model.addAttribute("instructions", instructions);
+            return "/seeInstructions";
+        }
+        else {return "redirect:/startpage";}
     }
     @RequestMapping(value="/editInstruction/{instructionId}",method = RequestMethod.GET)
     public String edit(@PathVariable("instructionId") Long instructionId,Model model)
@@ -326,6 +358,24 @@ public class InstructionsController {
         }
         return instructions;
     }
+    @RequestMapping(value="deleteInstruction",method=RequestMethod.GET)
+    public void deleteInstruction(@RequestParam Long instructionId)
+    {
+        Instructions instructions=instructionsDao.findById(instructionId).get(0);
+        instructionsDao.delete(instructions);
+        List<Step> steps=stepDao.findAllByInstructionsId(instructionId);
+        stepDao.delete(steps);
+        List<Comments> comments=commentsDao.findAllByInstructionId(instructionId);
+        ArrayList<Like> likes= new ArrayList<>() ;
 
+        for(int i=0;i<comments.size();i++)
+        {
+         likes.addAll(likeDao.findAllByCommentId(comments.get(i).getId()));
+        }
+        likeDao.delete(likes);
+        commentsDao.delete(comments);
+        List<Rating> ratings=ratingDao.findAllByInstrId(instructionId);
+        ratingDao.delete(ratings);
+    }
 
 }

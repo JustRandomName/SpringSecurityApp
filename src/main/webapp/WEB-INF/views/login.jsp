@@ -30,7 +30,8 @@
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+            <button type="button" class="navbar-toggle" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1">
                 <span class="sr-only">Toggle navigation</span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
@@ -42,35 +43,32 @@
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
-                <li><a class="navbar-brand" href="/startpage">Log In</a></li>
+                <c:if test="${pageContext.request.userPrincipal.name != null}">
+                    <form id="logoutForm" method="POST" action="${contextPath}/logout" hidden>
+                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                    </form>
+                    <li><a class="navbar-brand" style="cursor: pointer" onclick="document.forms['logoutForm'].submit()">Logout</a>
+                    </li>
+                </c:if>
+                <c:if test="${pageContext.request.userPrincipal.name == null}">
+                    <li><a class="navbar-brand" href="/startpage">Log In</a></li>
+                </c:if>
                 <li><a class="navbar-brand" href="/userPage">Go to account</a></li>
             </ul>
-            <div class="navbar-form navbar-right " >
+            <div class="navbar-form navbar-right ">
                 <div class="form-group">
                     <input id="search" type="text" class="form-control" placeholder="Search">
                 </div>
-                <button class="btn btn-default" onclick="searchInstructions()" >Find</button>
+                <button class="btn btn-default" onclick="searchInstructions()">Search</button>
             </div>
 
             <ul class="nav navbar-nav navbar-right">
-                <li><a onclick="seeTags()">Tags cloud</a></li>
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#">Действие</a></li>
-                        <li><a href="#">Другое действие</a></li>
-                        <li><a href="#">Что-то еще</a></li>
-                        <li class="divider"></li>
-                        <li><a href="#">Отдельная ссылка</a></li>
-                    </ul>
-                </li>
+                <li><a class="navbar-brand" onclick="seeTags()" style="cursor: pointer">Tags cloud</a></li>
             </ul>
         </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
 </nav>
-
 <main role="main">
-
     <!-- Main jumbotron for a primary marketing message or call to action -->
     <div class="jumbotron">
         <div class="container">
@@ -104,8 +102,6 @@
 <!-- Placed at the end of the document so the pages load faster -->
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 <script>window.jQuery || document.write('<script src="../../../../assets/js/vendor/jquery.min.js"><\/script>')</script>
-<script src="../../../../assets/js/vendor/popper.min.js"></script>
-<script src="../../../../dist/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="/resources/js/search.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 <script>
