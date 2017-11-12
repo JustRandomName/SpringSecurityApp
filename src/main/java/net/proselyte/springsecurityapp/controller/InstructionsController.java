@@ -59,14 +59,13 @@ public class InstructionsController {
         model.addAttribute("tagsCloud", tag);
         return "/tag";
     }
-
-    @RequestMapping(value = "/seeInstructions/{username}", method = RequestMethod.GET)
-    public String see(@PathVariable("username") String username, Model model) {
+    private boolean check(int ownerId) {
         User curruser;
-        int i=0;
+        int i = 0;
         try {
             curruser = userService.findByUsername(((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()).get(0);
             try {
+                int l;
                 String myDriver = "com.mysql.jdbc.Driver";
                 String myUrl = "jdbc:mysql://localhost/project";
                 String sqlRequest = "select role_id from project.user_roles where user_id = " + curruser.getId() + ";";
@@ -78,19 +77,20 @@ public class InstructionsController {
                 resultSet.last();
                 resultSet.getRow();
                 i = resultSet.getInt("role_id");
-            } catch (ClassNotFoundException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-
-        }catch (Exception e){
-            return "redirect:/startpage";
+        } catch (Exception e) {
+            return false;
         }
-
+        return (ownerId == curruser.getId() )|| i == 2 ;
+    }
+    @RequestMapping(value = "/seeInstructions/{username}", method = RequestMethod.GET)
+    public String see(@PathVariable("username") String username, Model model) {
         User user = userService.findByUsername(username).get(0);
-        if(i==2||(curruser.getId()==user.getId())) {
+        if(check(user.getId())) {
             List<Instructions> instructions = instructionsDao.findAllByOwnerId(user.getId());
             model.addAttribute("instructions", instructions);
-            model.addAttribute("username", user.getUsername());
             return "/seeInstructions";
         }
         else {return "redirect:/startpage";}
@@ -98,28 +98,33 @@ public class InstructionsController {
 
     @RequestMapping(value = "/editInstruction/{instructionId}", method = RequestMethod.GET)
     public String edit(@PathVariable("instructionId") Long instructionId, Model model) {
-        try {
-            List<InstrTag> tagsList = instrTagDao.findAllByInstrId(Math.toIntExact(instructionId));
-            String tags[] = new String[tagsList.size()];
-            for (int i = 0; i < tagsList.size(); i++) {
-                tags[i] = tagsList.get(i).getTagName();
-            }
-            List<Tags> tagsList1 = tagsDao.findAll();
-            String tags1[] = new String[tagsList1.size()];
-            for (int i = 0; i < tagsList1.size(); i++) {
-                tags1[i] = tagsList1.get(i).getTag();
-            }
-            model.addAttribute("tags1", tags);
-            model.addAttribute("tags2", tags1);
-        } catch (Exception e) {
-            e.getMessage();
-        }
         Instructions instructions = instructionsDao.findById(instructionId).get(0);
-        List<Step> steps = stepDao.findAllByInstructionsId(instructionId);
-        model.addAttribute("instruction", instructions);
-        model.addAttribute("steps", steps);
-        return "/editInstruction";
+        if(check(instructions.getOwnerId())) {
+            try {
+                List<InstrTag> tagsList = instrTagDao.findAllByInstrId(Math.toIntExact(instructionId));
+                String tags[] = new String[tagsList.size()];
+                for (int i = 0; i < tagsList.size(); i++) {
+                    tags[i] = tagsList.get(i).getTagName();
+                }
+                List<Tags> tagsList1 = tagsDao.findAll();
+                String tags1[] = new String[tagsList1.size()];
+                for (int i = 0; i < tagsList1.size(); i++) {
+                    tags1[i] = tagsList1.get(i).getTag();
+                }
+                model.addAttribute("tags1", tags);
+                model.addAttribute("tags2", tags1);
+            } catch (Exception e) {
+                e.getMessage();
+            }
+
+            List<Step> steps = stepDao.findAllByInstructionsId(instructionId);
+            model.addAttribute("instruction", instructions);
+            model.addAttribute("steps", steps);
+            return "/editInstruction";
+        }
+        return "redirect:/login";
     }
+
 
     @RequestMapping(value = "/editInstructions", method = RequestMethod.GET)
     @ResponseBody
@@ -329,14 +334,29 @@ public class InstructionsController {
         model.addAttribute("instruction", instructions);
         List<Step> steps = stepDao.findAllByInstructionsId(current);
         List<Comments> comments = commentsDao.findAllByInstructionId(current);
+        String[][] information=new String[comments.size()][4];
+        for(int i=0;i<comments.size();i++)
+        {
+            information[i][0]=userDao.findById(comments.get(i).getOwnerId()).getName();
+            information[i][1]=comments.get(i).getId().toString();
+            information[i][2]=comments.get(i).getContent();
+            information[i][3]=Integer.toString(comments.get(i).getLikes());
+        }
+
         model.addAttribute("steps", steps);
         if (step == 0) {
             model.addAttribute("currentStep", null);
         } else {
             model.addAttribute("currentStep", steps.get(step - 1));
         }
+        User curruser=null;
+        try {
+            curruser = userService.findByUsername(((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()).get(0);
+        }catch(Exception e){
+        }
+        model.addAttribute("user",curruser);
+        model.addAttribute("information",information);
         model.addAttribute("lastStep", steps.size());
-        model.addAttribute("comments", comments);
         return "/viewInstruction";
     }
 

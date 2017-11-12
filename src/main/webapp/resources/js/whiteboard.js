@@ -6,12 +6,13 @@
 
 
 
-function defineComment(content,instructionId,commentId) {
+function defineComment(content,instructionId,commentId,username) {
     window.alert(instructionId);
     var json = JSON.stringify({
         "content": content,
         "instructionId": instructionId,
-        "commentId":commentId
+        "commentId":commentId,
+        "username":username
     });
     drawComment(json);
     console.log("drawImageText");
@@ -22,18 +23,33 @@ function defineComment(content,instructionId,commentId) {
 function drawComment(image) {
     var json = JSON.parse(image);
     if(json.instructionId.toString()===document.getElementById("modelAttr").innerHTML.toString()) {
-        var el = document.getElementById("comments");
-        var heading = document.createElement("h3");
-        var button=document.createElement("button");
-        var p=document.createElement("p");
-        p.setAttribute("id","Likes"+json.commentId);
-        p.innerText=0;
-        button.innerText="Like";
-        button.setAttribute("onclick","addLike("+json.commentId+")");
-        heading.innerText = json.content;
-        el.appendChild(heading);
-        el.appendChild(p);
-        el.appendChild(button);
+        var el=document.getElementById("comments");
+        var div=document.createElement("div");
+        var username=document.createElement("a");
+        var says=document.createElement("span");
+        var content=document.createElement("span");
+        var like=document.createElement("div");
+        var count=document.createElement("span");
+        var img=document.createElement("span");
+        img.style.cursor="pointer";
+        img.className="glyphicon glyphicon-heart";
+        img.setAttribute('onclick','addLike('+json.commentId+')');
+        count.id="Likes"+json.commentId;
+        count.innerText="0";
+        like.className="like";
+        like.appendChild(count);
+        like.appendChild(img);
+        content.innerText=json.content;
+        says.innerText=" says:";
+        username.innerText=json.username;
+        username.href="#";
+        div.className="posted-comments";
+        div.appendChild(username);
+        div.appendChild(says);
+        div.appendChild(document.createElement("br"));
+        div.appendChild(content);
+        div.appendChild(like);
+        el.appendChild(div);
     }
 }
 

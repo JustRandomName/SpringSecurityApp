@@ -58,32 +58,61 @@
 <div class="container">
     <h1>${instruction.heading}</h1>
     <p>${instruction.content}</p>
-    <c:forEach items="${steps}" var="item">
-        <button class='steps' onclick='viewStep("${item.number}")'>Step${item.number}</button>
-        <div id="currentStep"></div>
-    </c:forEach>
+    <div class="btn-group-vertical" role="group">
+        <c:forEach items="${steps}" var="item">
+            <button type="button" class='steps btn btn-default' onclick='viewStep("${item.number}")'>
+                Step${item.number}</button>
+            <div id="currentStep"></div>
+        </c:forEach>
+    </div>
+    <br>
     <h1 class="step">${currentStep.heading}</h1>
     <h3 class="step">${currentStep.content}</h3>
-    <button id="prev" onclick="prev(${currentStep.number})">Prev</button>
-    <button id="next" onclick="next(${currentStep.number})">Next</button>
-    <button id="first" onclick="first()">First</button>
+    <div class="arr">
+        <span id="first" class="arrows glyphicon glyphicon-fast-backward" onclick="first()"></span>
+        <span id="prev" class="arrows glyphicon glyphicon-arrow-left" onclick="prev(${currentStep.number})"></span>
+        <span id="next" class="arrows glyphicon glyphicon-arrow-right pull-right" onclick="next(${currentStep.number})"></span>
+    </div>
+    <br>
+    <br>
 
-    <div class="comments">
-        <c:forEach items="${comments}" var="item">
-            <a href="#">JohnDoe</a> says :
-            <br>
-            <span>${item.content}</span>
-            <div class="like">
-                <span id="Likes${item.id}">${item.likes}</span>
-                <span style="cursor: pointer" class="glyphicon glyphicon-heart" onclick="addLike(${item.id})"></span>
+    <div class="comments" id="comments">
+        <br>
+        <c:forEach items="${information}" var="item">
+            <div class="posted-comments">
+                <a style="" href="#">${item[0]}</a>
+                <span> says :</span>
+                <br>
+                <span>${item[2]}</span>
+                <div class="like">
+                    <span id="Likes${item[1]}">${item[3]}</span>
+                    <span style="cursor: pointer" class="glyphicon glyphicon-heart"
+                          onclick="addLike(${item[1]})"></span>
+                </div>
             </div>
         </c:forEach>
     </div>
     <style>
-        .like{
-            text-align: right;
+        .arr{
+            width: 70%;
         }
-        .comments{
+        .comments {
+            border-top: 1px solid #5bc0de;
+            width: 70%;
+        }
+
+        .like {
+            text-align: right;
+
+        }
+
+
+        .arrows {
+            cursor: pointer;
+            font-size: 30px;
+        }
+
+        .posted-comments {
             width: 70%;
             border: 1px solid #cccccc;
             margin-bottom: 20px;
@@ -93,11 +122,12 @@
             position: relative;
             border-radius: 4px;
         }
-        textarea#comment{
-            width:70%;
+
+        textarea#comment {
+            width: 70%;
         }
     </style>
-    <p><textarea style="resize: none" rows="4" cols="100" id="comment"></textarea></p>
+    <p><textarea style="resize: none;" rows="4" id="comment"></textarea></p>
     <button onclick="addComment()">Comment</button>
 </div>
 </body>
@@ -105,7 +135,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 <script type="text/javascript" src="/resources/js/websocket.js"></script>
 <script type="text/javascript" src="/resources/js/whiteboard.js"></script>
-<script  type="text/javascript">
+<script type="text/javascript">
     function addComment() {
         var el = document.getElementById("comment");
         $.ajax({
@@ -115,11 +145,14 @@
                 "instructionsId": ${instruction.id},
                 "content": el.value
             }), success: function (str) {
-                if (str === 0) {
-                    window.alert("user not found")
+
+                if (str === "0") {
+                    window.location.replace("/startpage")
                 } else {
-                    defineComment(el.value, ${instruction.id}, str);
+                    var name = "${user.name}";
+                    defineComment(el.value, ${instruction.id}, str, name);
                 }
+                el.value = "";
             }
         });
     }
@@ -166,9 +199,9 @@
             }), success: function (str) {
                 window.alert(str);
                 if (str === 0) {
-                    window.alert("user not found")
+                    window.location.replace("/startpage");
                 } else {
-                    document.getElementById("Likes"+commentId).innerText=str;
+                    document.getElementById("Likes" + commentId).innerText = str;
                 }
             }
         });
