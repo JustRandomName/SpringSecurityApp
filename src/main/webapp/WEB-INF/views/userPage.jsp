@@ -32,8 +32,6 @@
             </button>
             <a class="navbar-brand" href="/login">Home</a>
         </div>
-
-        <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
                 <c:if test="${pageContext.request.userPrincipal.name != null}">
@@ -56,7 +54,11 @@
             </div>
 
             <ul class="nav navbar-nav navbar-right">
-                <li><a class="navbar-brand" onclick="seeTags()" style="cursor: pointer">Tags cloud</a></li>
+                <c:if test="${ROLE==2}">
+                    <li><a class="navbar-brand" href="/admin" style="cursor: pointer">Admin Page</a></li>
+                </c:if>
+                    <li><a class="navbar-brand" onclick="seeTags()" style="cursor: pointer">Tags cloud</a></li>
+
             </ul>
         </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->

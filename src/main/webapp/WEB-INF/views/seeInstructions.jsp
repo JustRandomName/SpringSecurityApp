@@ -44,7 +44,7 @@
                 <div class="form-group">
                     <input id="search" type="text" class="form-control" placeholder="Search">
                 </div>
-                <button class="btn btn-default" onclick="searchInstructions()">Search</button>
+                <button class="btn btn-info" onclick="searchInstructions()">Search</button>
             </div>
 
             <ul class="nav navbar-nav navbar-right">
@@ -53,27 +53,49 @@
         </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
 </nav>
-<c:forEach items="${instructions}" var="item">
-    <div id="instruction${item.id}">
-    <h1>${item.content}</h1>
-    <a href="/editInstruction/${item.id}">Edit </a>
-    <button onclick="deleteInstruction(${item.id})">DELETE</button>
-    </div>
-</c:forEach>
+<div class="container">
+    <div class="row">
+        <div style="padding:10px; position: absolute; right: 0; bottom: 0; " class="text-right">
+            <a class="glyphicon glyphicon-edit" style="font-size: 50px; color: firebrick; text-decoration: none" href="/createInstruction/${username}"></a>
+        </div>
+            <table class="table table-striped">
+        <c:forEach items="${instructions}" var="item">
+             <tr>
+                 <td>
+                <div id="instruction${item.id}">
+                    <h3>${item.heading}</h3>
+                </div>
+                 </td>
+                 <td>
+                <div class="dropdown">
+                    <button class="btn btn-default dropdown-toggle" type="button" id="menu5" data-toggle="dropdown"><span
+                            class="caret"></span></button>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
+                        <li role="presentation"><a role="menuitem" href="/editInstruction/${item.id}">Edit</a></li>
+                        <li role="presentation"><a role="menuitem" href="deleteInstruction(${item.id})">Delete</a></li>
+                    </ul>
+                </div>
+                 </td>
 
+             </tr>
+        </c:forEach>
+            </table>
+
+    </div>
+</div>
 </body>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 <script>
-function deleteInstruction(instructionId){
-    $.ajax({
-        url: "/deleteInstruction",
-        type: 'GET',
-        data: ({
-            "instructionId":instructionId
-        })
-    });
-    document.getElementById("instruction"+instructionId).remove();
-}
+    function deleteInstruction(instructionId) {
+        $.ajax({
+            url: "/deleteInstruction",
+            type: 'GET',
+            data: ({
+                "instructionId": instructionId
+            })
+        });
+        document.getElementById("instruction" + instructionId).remove();
+    }
 </script>
 </html>

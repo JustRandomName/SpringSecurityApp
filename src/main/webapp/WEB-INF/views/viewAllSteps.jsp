@@ -66,9 +66,10 @@
 <div>
     <div class="container">
     <div id="HTMLtoPDF">
+        <strong><h2><a style="cursor: pointer; color: #000;"  href="/user/${userPage.username}">${userPage.username}</a></h2></strong>
         <input id="rating" type="hidden" class="rating" value="${naxyu}" />
         <c:forEach items="${Steps}" var="item">
-            <p> ${item.heading}</p>
+            <strong><p> ${item.heading}</p></strong>
             <p> ${item.content}</p>
         </c:forEach>
 

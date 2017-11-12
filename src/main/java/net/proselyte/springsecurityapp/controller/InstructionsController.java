@@ -13,6 +13,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -58,10 +62,38 @@ public class InstructionsController {
 
     @RequestMapping(value = "/seeInstructions/{username}", method = RequestMethod.GET)
     public String see(@PathVariable("username") String username, Model model) {
+        User curruser;
+        int i=0;
+        try {
+            curruser = userService.findByUsername(((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()).get(0);
+            try {
+                String myDriver = "com.mysql.jdbc.Driver";
+                String myUrl = "jdbc:mysql://localhost/project";
+                String sqlRequest = "select role_id from project.user_roles where user_id = " + curruser.getId() + ";";
+                Class.forName(myDriver);
+                Connection conn = DriverManager.getConnection(myUrl, "root", "root");
+                String query = sqlRequest;
+                Statement statement = conn.createStatement();
+                ResultSet resultSet = statement.executeQuery(query);
+                resultSet.last();
+                resultSet.getRow();
+                i = resultSet.getInt("role_id");
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+
+        }catch (Exception e){
+            return "redirect:/startpage";
+        }
+
         User user = userService.findByUsername(username).get(0);
-        List<Instructions> instructions = instructionsDao.findAllByOwnerId(user.getId());
-        model.addAttribute("instructions", instructions);
-        return "/seeInstructions";
+        if(i==2||(curruser.getId()==user.getId())) {
+            List<Instructions> instructions = instructionsDao.findAllByOwnerId(user.getId());
+            model.addAttribute("instructions", instructions);
+            model.addAttribute("username", user.getUsername());
+            return "/seeInstructions";
+        }
+        else {return "redirect:/startpage";}
     }
 
     @RequestMapping(value = "/editInstruction/{instructionId}", method = RequestMethod.GET)
@@ -171,8 +203,8 @@ public class InstructionsController {
         }
     }
 
-    @RequestMapping(value = "/createInstruction", method = RequestMethod.GET)
-    public String add(Model model) {
+    @RequestMapping(value = "/createInstruction/{username}", method = RequestMethod.GET)
+    public String add(@PathVariable("username") String username, Model model) {
         try {
             List<Tags> tagsList = tagsDao.findAll();
             String[] arr = new String[tagsList.size()];
@@ -180,14 +212,16 @@ public class InstructionsController {
                 arr[i] = tagsList.get(i).getTag();
             }
             model.addAttribute("tags", arr);
-            User user = userService.findByUsername(((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()).get(0);
-
-            model.addAttribute("currentId", user.getId());
+            User user1 = userDao.findByUsername(username).get(0);
+            model.addAttribute("currentId", user1.getId());
             return "createInstruction";
         } catch (Exception e) {
             return "redirect:/startpage";
         }
     }
+
+
+
 
     private Instructions instructions;
 
@@ -281,7 +315,7 @@ public class InstructionsController {
     void saveStep(@RequestParam String content, @RequestParam int number) {
         Step step = new Step();
         step.setContent(content);
-        step.setHeading("LOL");
+        step.setHeading("Step" + number);
         step.setNumber(number);
         step.setInstructionsId(instructions.getId());
         stepService.save(step);
@@ -338,6 +372,9 @@ public class InstructionsController {
             model.addAttribute("user", i);
         }
         List<Step> steps = stepDao.findAllByInstructionsId(inst_id);
+        Instructions instructions = instructionsDao.findAllById(inst_id);
+        User user = userDao.findById(instructions.getOwnerId());
+        model.addAttribute("userPage", user);
         model.addAttribute("id", inst_id);
         model.addAttribute("Steps", steps);
         int buffer = addMark(inst_id);

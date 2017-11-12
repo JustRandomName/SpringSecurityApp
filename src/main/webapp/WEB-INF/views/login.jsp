@@ -75,7 +75,7 @@
         <div class="container">
             <h1 class="display-3">How to make a jet engine from shit and sticks</h1>
             <p>This site is about how to do cool things from the unnecessary parts of things.</p>
-            <p><a class="btn btn-primary btn-lg" href="/createInstruction" role="button">New instruction &raquo;</a></p>
+            <p><a class="btn btn-primary btn-lg" href="/createInstruction/${user}" role="button">New instruction &raquo;</a></p>
         </div>
     </div>
 
