@@ -6,18 +6,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
     <meta charset="utf-8">
     <title></title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
-    <style type="text/css"> </style>
-    <link href="${contextPath}/resources/css/common.css" rel="stylesheet">
+    <style type="text/css">
+
+    </style>
     <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="/resources/js/search.js"></script>
 </head>
-
 <body>
 
 <nav class="navbar navbar-default " role="navigation">
@@ -64,25 +63,32 @@
 </nav>
 
 <div class="container">
-
-    <form method="POST" action="${contextPath}/newPassword" class="form-signin">
-        <h2 class="form-heading">Log in</h2>
-
-        <div class="form-group ${error != null ? 'has-error' : ''}">
-            <span>${message}</span>
-            <input name="password" type="password" class="form-control" placeholder="Password"/>
-            <span>${error}</span>
-            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-
-            <button class="btn btn-lg btn-primary btn-block" type="submit">Log In</button>
-
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-heading"><h4>User Profile</h4></div>
+            <div class="panel-body">
+                <div class="col-md-4 col-xs-12 col-sm-6 col-lg-4">
+                    <img alt="User Pic"
+                         src="https://x1.xingassets.com/assets/frontend_minified/img/users/nobody_m.original.jpg"
+                         id="profile-image1" class="img-circle img-responsive">
+                </div>
+                <div class="col-md-8 col-xs-12 col-sm-6 col-lg-8">
+                    <div class="container">
+                        <h2>${currentUsername}</h2>
+                        <p>an <b> Employee</b></p>
+                    </div>
+                    <hr>
+                    <ul class="container details">
+                        <li><p><span class="glyphicon glyphicon-user one" style="width:50px;"></span></p></li>
+                        <li><p><span class="glyphicon glyphicon-envelope one" style="width:50px;"></span>${userName}
+                        </p></li>
+                    </ul>
+                    <hr>
+                    <div class="col-sm-5 col-xs-6 tital ">Date Of Joining: 15 Jun 2016</div>
+                </div>
+            </div>
         </div>
-
-    </form>
-
+    </div>
 </div>
-<!-- /container -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-<script src="${contextPath}/resources/js/bootstrap.min.js"></script>
 </body>
 </html>

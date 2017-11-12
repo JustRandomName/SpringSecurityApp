@@ -1,4 +1,8 @@
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<c:set var="contextPath" value="${pageContext.request.contextPath}"/>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,6 +15,7 @@
     </style>
     <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/resources/js/search.js"></script>
 </head>
 <body>
 
@@ -18,7 +23,8 @@
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+            <button type="button" class="navbar-toggle" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1">
                 <span class="sr-only">Toggle navigation</span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
@@ -30,25 +36,27 @@
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
-
+                <c:if test="${pageContext.request.userPrincipal.name != null}">
                     <form id="logoutForm" method="POST" action="${contextPath}/logout" hidden>
                         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                     </form>
-
-                    <li><a class="navbar-brand"  onclick="document.forms['logoutForm'].submit()">Logout</a>
+                    <li><a class="navbar-brand" style="cursor: pointer" onclick="document.forms['logoutForm'].submit()">Logout</a>
                     </li>
+                </c:if>
+                <c:if test="${pageContext.request.userPrincipal.name == null}">
+                    <li><a class="navbar-brand" href="/startpage">Log In</a></li>
+                </c:if>
                 <li><a class="navbar-brand" href="/userPage">Go to account</a></li>
             </ul>
-            <form class="navbar-form navbar-right " role="search">
+            <div class="navbar-form navbar-right ">
                 <div class="form-group">
-                    <input type="text" class="form-control" placeholder="Search">
+                    <input id="search" type="text" class="form-control" placeholder="Search">
                 </div>
-                <button type="submit" class="btn btn-default">Search</button>
-            </form>
+                <button class="btn btn-default" onclick="searchInstructions()">Search</button>
+            </div>
+
             <ul class="nav navbar-nav navbar-right">
-                <c:if test= "${ROLE==2}">
-                    <li><a class="navbar-brand" href="/admin">Admin page</a></li>
-                </c:if>
+                <li><a class="navbar-brand" onclick="seeTags()" style="cursor: pointer">Tags cloud</a></li>
             </ul>
         </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
@@ -77,13 +85,6 @@
                         </p></li>
                     </ul>
                     <hr>
-                    <c:forEach items="${instructions}" var="item">
-                        <div style="overflow-x: hidden;" class="col-md-4">
-                            <h2>${item.heading}</h2>
-                            <p><a class="btn btn-light" href="#" role="button" >View more</a></p>
-                        </div>
-
-                    </c:forEach>
                     <div class="col-sm-5 col-xs-6 tital ">Date Of Joining: 15 Jun 2016</div>
                 </div>
             </div>

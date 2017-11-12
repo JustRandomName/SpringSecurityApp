@@ -4,6 +4,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script type="text/javascript" src="/resources/js/search.js"></script>
     <meta charset="utf-8">
     <title></title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -24,7 +25,6 @@
     <link href = "/resources/css/selectize.bootstrap3.css" rel="stylesheet", type="text/css">
 </head>
 <body>
-
 <nav class="navbar navbar-default " role="navigation">
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
@@ -42,21 +42,31 @@
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
-                <li><a class="navbar-brand" href="/startpage">Log In</a></li>
+                <c:if test="${pageContext.request.userPrincipal.name != null}">
+                    <form id="logoutForm" method="POST" action="${contextPath}/logout" hidden>
+                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                    </form>
+                    <li><a class="navbar-brand" style="cursor: pointer" onclick="document.forms['logoutForm'].submit()">Logout</a>
+                    </li>
+                </c:if>
+                <c:if test="${pageContext.request.userPrincipal.name == null}">
+                    <li><a class="navbar-brand" href="/startpage">Log In</a></li>
+                </c:if>
                 <li><a class="navbar-brand" href="/userPage">Go to account</a></li>
             </ul>
-            <form class="navbar-form navbar-right " role="search">
+            <div class="navbar-form navbar-right ">
                 <div class="form-group">
-                    <input type="text" class="form-control" placeholder="Search">
+                    <input id="search" type="text" class="form-control" placeholder="Search">
                 </div>
-                <button type="submit" class="btn btn-default">Search</button>
-            </form>
+                <button class="btn btn-default" onclick="searchInstructions()">Search</button>
+            </div>
+
             <ul class="nav navbar-nav navbar-right">
+                <li><a class="navbar-brand" onclick="seeTags()" style="cursor: pointer">Tags cloud</a></li>
             </ul>
         </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
 </nav>
-
 <main role="main">
     <div class="jumbotron">
         <div class="container">

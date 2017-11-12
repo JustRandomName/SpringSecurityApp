@@ -10,4 +10,5 @@ public interface UserService {
     void save(User user);
 
     List<User> findByUsername(String username);
+    User findByUsernameContains(String username);
 }

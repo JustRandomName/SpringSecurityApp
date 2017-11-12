@@ -12,7 +12,7 @@
 </head>
 <body>
 <h3>Вы зарегестрированы на сайте</h3>
-<button class="btn btn-info" href="/login"></button>
+<a class="btn btn-info" href="/login">Go to login</a>
 
 </body>
 </html>
