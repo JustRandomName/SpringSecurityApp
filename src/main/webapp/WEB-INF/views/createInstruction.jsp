@@ -20,6 +20,7 @@
     <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
     <script src ="/resources/js/selectize.min.js"></script>
+    <link href="/resources/css/style.css" rel="stylesheet" tepe = "text/css">
 </head>
 <body >
 
@@ -73,10 +74,9 @@
                 <br>
             </form>
             <div class="demo">
-                <h2>&lt;select multiple&gt;</h2>
                 <div class="control-group">
-                    <label for="select-state">States:</label>
-                    <select id="select-state" name="state[]" multiple class="demo-default" style="width:50%" placeholder="Select a state...">
+                    <label for="select-state">Select Tags:</label>
+                    <select id="select-state" name="state[]" multiple class="demo-default" style="width:50%" placeholder="Select a tag...">
                         <c:forEach items="${tags}" var="item">
                         <option value="${item}">${item}</option>
                         </c:forEach>
@@ -95,7 +95,6 @@
                     });
 
                 </script>
-                <button onclick="option()">111</button>
             </div>
 
 
@@ -103,8 +102,10 @@
         </div>
 
 
-        <p><button onclick="addInstruction();saveSteps()">Save</button></p>
-        <button onclick="addNewStep()" >AddNewStep</button>
+        <div style="padding:10px" class="text-center">
+            <button class="btn btn-lg btn-primary" onclick="addNewStep()">AddNewStep</button>
+            <button class="btn btn-lg btn-success" onclick="addInstruction();saveSteps()">Save</button>
+        </div>
     </div>
 </main>
 <!-- Include external JS libs. -->
@@ -132,6 +133,7 @@
 
     function saveSteps() {
         var steps=document.getElementsByClassName('steps');
+        window.alert(34);
         for(var i=0;i<steps.length;i++)
         {
             var str=steps[i].value;

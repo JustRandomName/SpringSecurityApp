@@ -3,7 +3,10 @@ CREATE TABLE users (
   username VARCHAR(255) ,
   password VARCHAR(255) ,
   name VARCHAR(255) ,
-  enabled BOOLEAN
+  enabled BOOLEAN,
+  numderLikes INT,
+  numberComments INT,
+  numderInstr INT
 )
   ENGINE = InnoDB;
 
@@ -28,7 +31,7 @@ CREATE TABLE user_roles (
 
 
 
-INSERT INTO users VALUES (1, 'admin', '$2a$11$uSXS6rLJ91WjgOHhEGDx..VGs7MkKZV68Lv5r1uwFu7HgtRn3dcXG', 'Emil', TRUE);
+INSERT INTO users VALUES (1, 'admin', '$2a$11$uSXS6rLJ91WjgOHhEGDx..VGs7MkKZV68Lv5r1uwFu7HgtRn3dcXG', 'Admin', TRUE, 0 , 0 , 0);
 
 INSERT INTO roles VALUES (1, 'ROLE_USER');
 INSERT INTO roles VALUES (2, 'ROLE_ADMIN');
@@ -89,10 +92,23 @@ CREATE TABLE intrTags(
   instrId INT
 );
 
-CREATE TABLE instTags(
-  instructionsId INT,
-  tagsId INT
+CREATE TABLE achivings(
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  achivName varchar(50),
+  threshold INT
 );
+
+INSERT INTO achivings VALUES (1, 'likeGod', 1);
+INSERT INTO achivings VALUES (2, 'instrGod', 1);
+INSERT INTO achivings VALUES (3, 'commentGod', 1);
+
+CREATE TABLE userAchivings(
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  achiv varchar(50),
+  userId INT
+);
+
+
 INSERT INTO tags VALUES (1, 'Transport', 1);
 INSERT INTO tags VALUES (2, 'Equipment', 1);
 INSERT INTO tags VALUES (3, 'Cooking', 1);

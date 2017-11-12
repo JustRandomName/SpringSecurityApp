@@ -24,6 +24,39 @@ public class User {
     @Column (name = "enabled")
     private Boolean enabled;
 
+    @Column(name = "numderLikes")
+    private int numderLikes = 0;
+
+    @Column(name = "numberComments")
+    private int numberComments = 0;
+
+    @Column(name = "numderInstr")
+    private  int numderInstr = 0;
+
+    public int getNumderLikes() {
+        return numderLikes = 0;
+    }
+
+    public void setNumderLikes(int numderLikes) {
+        this.numderLikes = numderLikes;
+    }
+
+    public int getNumberComments() {
+        return numberComments;
+    }
+
+    public void setNumberComments(int numberComments) {
+        this.numberComments = numberComments;
+    }
+
+    public int getNumderInstr() {
+        return numderInstr;
+    }
+
+    public void setNumderInstr(int numderInstr) {
+        this.numderInstr = numderInstr;
+    }
+
     @Transient
     private String confirmPassword;
 

@@ -107,6 +107,12 @@ public class UserController {
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String login(Model model, String error, String logout) {
         try {
+            try {
+                User user = userService.findByUsername(((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()).get(0);
+                model.addAttribute("user", user.getUsername());
+            } catch (Exception e){
+                model.addAttribute("user", 0);
+            }
             String myDriver = "com.mysql.jdbc.Driver";
             String myUrl = "jdbc:mysql://localhost/project";
             Class.forName(myDriver);
@@ -398,4 +404,8 @@ public class UserController {
             e.printStackTrace();
         }
     }
+    ////////////////////////////////////
+
+
+
  }

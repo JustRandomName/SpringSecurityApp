@@ -64,6 +64,7 @@
 </nav>
 
 <div>
+    <div class="container">
     <div id="HTMLtoPDF">
         <input id="rating" type="hidden" class="rating" value="${naxyu}" />
         <c:forEach items="${Steps}" var="item">
@@ -72,10 +73,12 @@
         </c:forEach>
 
     </div>
+
     <a href="#" onclick="HTMLtoPDF()">Download PDF</a>
     <p><a class="btn btn-info" href="#" role="button" onclick="viewInstructions(${id})">View more</a></p>
-</div>
 
+    </div>
+</div>
 </body>
 <script src="/resources/js/bootstrap-rating.min.js"></script>
 <script>

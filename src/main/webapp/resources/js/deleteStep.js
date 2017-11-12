@@ -22,17 +22,19 @@ function addNewStep() {
     textarea.className="steps";
     var div= document.createElement("div");
     div.id="StepId"+number;
-    var delite= document.createElement("button");
+    var delite= document.createElement("a");
+    delite.className = "glyphicon glyphicon-remove";
     delite.setAttribute('onclick','deleteStep('+number+')');
-    delite.innerText="Delete Step "+number;
+    // delite.innerText="Delete Step "+number;
     delite.id="DeleteId"+number;
     var heading=document.createElement("h3");
     heading.innerText="Step "+number;
     heading.id="Heading"+number;
+    heading.className = "step";
     var el=document.getElementById("steps");
     div.appendChild(heading);
-    div.appendChild(textarea);
     div.appendChild(delite);
+    div.appendChild(textarea);
     div.appendChild(document.createElement("br"));
     el.appendChild(div);
     $('textarea.steps').froalaEditor({
