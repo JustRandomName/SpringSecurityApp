@@ -405,7 +405,13 @@ public class UserController {
         }
     }
     ////////////////////////////////////
-
+    @RequestMapping(value = "/user/{username}",method = RequestMethod.GET)
+    public String user(@PathVariable("username") String username,Model model) {
+        User user=userDao.findByUsername(username).get(0);
+        model.addAttribute("userName", user.getName());
+        model.addAttribute("currentUsername",user.getUsername());
+        return "/user";
+    }
 
 
  }
