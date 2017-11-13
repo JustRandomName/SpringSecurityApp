@@ -86,7 +86,6 @@
 
                 <div style="overflow-x: hidden;" class="col-md-4">
                     <div>
-                        <h2>${item[0]}</h2>
                         <h2>${item[2]}</h2>
                         <p>${item[3]}</p>
                         <p><a class="btn btn-info" href="#" role="button" onclick="viewInstructions(${item[4]})">View
