@@ -13,7 +13,12 @@ public class Achivings {
     private String achivName;
     @Column(name = "threshold")
     private int threshold;
+    @Column(name="achivImg")
+    private String achivImg;
 
+    public String getAchivImg() {
+        return achivImg;
+    }
     public int getId() {
         return id;
     }

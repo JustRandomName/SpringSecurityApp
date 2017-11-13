@@ -94,18 +94,20 @@ CREATE TABLE intrTags(
 
 CREATE TABLE achivings(
   id INT AUTO_INCREMENT PRIMARY KEY,
-  achivName varchar(50),
-  threshold INT
+  achivName varchar(100),
+  threshold INT,
+  achivImg VARCHAR(100)
 );
 
-INSERT INTO achivings VALUES (1, 'likeGod', 1);
-INSERT INTO achivings VALUES (2, 'instrGod', 1);
-INSERT INTO achivings VALUES (3, 'commentGod', 1);
+INSERT INTO achivings VALUES (1, 'likeGod', 1,'<span title="likeGod" class="glyphicon glyphicon-thumbs-up"><span>');
+INSERT INTO achivings VALUES (2, 'instrGod', 1,'<span title="instrGod" class="glyphicon glyphicon-tower"><span>');
+INSERT INTO achivings VALUES (3, 'commentGod', 1,'<span title="commentGod" class="glyphicon glyphicon-edit"><span>');
 
 CREATE TABLE userAchivings(
   id INT AUTO_INCREMENT PRIMARY KEY,
-  achiv varchar(50),
-  userId INT
+  achiv varchar(100),
+  userId INT,
+  achivImg VARCHAR(100)
 );
 
 

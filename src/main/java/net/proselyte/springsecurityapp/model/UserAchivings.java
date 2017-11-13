@@ -13,6 +13,16 @@ public class UserAchivings {
     private String achiv;
     @Column(name = "userId")
     private int userId;
+    @Column(name="achivImg")
+    private String achivImg;
+
+    public String getAchivImg() {
+        return achivImg;
+    }
+
+    public void setAchivImg(String achivImg) {
+        this.achivImg = achivImg;
+    }
 
     public String getAchiv() {
         return achiv;

@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
+import java.util.function.LongToIntFunction;
 
 
 @Controller
@@ -59,12 +60,15 @@ public class InstructionsController {
         model.addAttribute("tagsCloud", tag);
         return "/tag";
     }
+
     private boolean check(int ownerId) {
         User curruser;
         int i = 0;
         try {
             curruser = userService.findByUsername(((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()).get(0);
-            if(curruser==null){throw new Exception();}
+            if (curruser == null) {
+                throw new Exception();
+            }
             try {
                 int l;
                 String myDriver = "com.mysql.jdbc.Driver";
@@ -84,23 +88,25 @@ public class InstructionsController {
         } catch (Exception e) {
             return false;
         }
-        return (ownerId == curruser.getId() )|| i == 2 ;
+        return (ownerId == curruser.getId()) || i == 2;
     }
+
     @RequestMapping(value = "/seeInstructions/{username}", method = RequestMethod.GET)
     public String see(@PathVariable("username") String username, Model model) {
         User user = userService.findByUsername(username).get(0);
-        if(check(user.getId())) {
+        if (check(user.getId())) {
             List<Instructions> instructions = instructionsDao.findAllByOwnerId(user.getId());
             model.addAttribute("instructions", instructions);
             return "/seeInstructions";
+        } else {
+            return "redirect:/startpage";
         }
-        else {return "redirect:/startpage";}
     }
 
     @RequestMapping(value = "/editInstruction/{instructionId}", method = RequestMethod.GET)
     public String edit(@PathVariable("instructionId") Long instructionId, Model model) {
         Instructions instructions = instructionsDao.findById(instructionId).get(0);
-        if(check(instructions.getOwnerId())) {
+        if (check(instructions.getOwnerId())) {
             try {
                 List<InstrTag> tagsList = instrTagDao.findAllByInstrId(Math.toIntExact(instructionId));
                 String tags[] = new String[tagsList.size()];
@@ -130,10 +136,10 @@ public class InstructionsController {
     @RequestMapping(value = "/editInstructions", method = RequestMethod.GET)
     @ResponseBody
     public void editInstructions(@RequestParam Long instructionId, @RequestParam String heading, @RequestParam String content, @RequestParam("tags") String tags) {
-        String[] arr =  setTags(tags);
+        String[] arr = setTags(tags);
         List<InstrTag> instrTags = instrTagDao.findAllByInstrId(Math.toIntExact(instructionId));
         instrTagDao.delete(instrTags);
-        for(int i = 0; i < arr.length; i++){
+        for (int i = 0; i < arr.length; i++) {
             InstrTag instrTag = new InstrTag();
             instrTag.setTagName(arr[i]);
             instrTag.setInstrId(Math.toIntExact(instructionId));
@@ -158,7 +164,7 @@ public class InstructionsController {
             step.setContent(content);
             step.setInstructionsId(instructionId);
             step.setNumber(number + 1);
-            step.setHeading("Step"+(number+1));
+            step.setHeading("Step" + (number + 1));
             stepDao.save(step);
         }
     }
@@ -176,27 +182,27 @@ public class InstructionsController {
         } catch (Exception e) {
             return 0;
         }
-        user = userService.findByUsername(((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()).get(0);
         Like buf = likeDao.findByUserIdAndCommentId(user.getId(), commentId);
-        User user1 = userDao.findById(user.getId());
         int i = achivingsDao.findAllByAchivName("likeGod").getThreshold();
-        int j = user1.getNumderLikes() + 1;
-        user1.setNumderLikes(j);
-        if (j == achivingsDao.findAllByAchivName("likeGod").getThreshold()) {
-            UserAchivings userAchivings = new UserAchivings();
-            userAchivings.setAchiv("likeGod");
-            userAchivings.setUserId(user1.getId());
-            userAchivingsDao.save(userAchivings);
-            userDao.save(user1);
-        }
-        if (buf == null) {
 
+        if (buf == null) {
+            user.setNumderLikes(user.getNumderLikes() + 1);
+            userDao.save(user);
             comments.addLike();
             commentsDao.save(comments);
             Like like = new Like();
             like.setCommentId(commentId);
             like.setUserId(user.getId());
             likeDao.save(like);
+//            ---------------------
+            if (user.getNumderLikes() == achivingsDao.findAllByAchivName("likeGod").getThreshold()) {
+                UserAchivings userAchivings = new UserAchivings();
+                userAchivings.setAchiv("likeGod");
+                userAchivings.setAchivImg(achivingsDao.findAllByAchivName("likeGod").getAchivImg());
+                userAchivings.setUserId(user.getId());
+                userAchivingsDao.save(userAchivings);
+
+            }
         }
         return comments.getLikes();
     }
@@ -212,30 +218,31 @@ public class InstructionsController {
     @RequestMapping(value = "/createInstruction/{username}", method = RequestMethod.GET)
     public String add(@PathVariable("username") String username, Model model) {
         User user;
-       try{
-            user= userDao.findByUsername(username).get(0);
-            if(user==null){throw new Exception();}
-       }catch (Exception e){
-           return "redirect:/startpage";
-       }
-        if(check(user.getId())){
         try {
-            List<Tags> tagsList = tagsDao.findAll();
-            String[] arr = new String[tagsList.size()];
-            for (int i = 0; i < tagsList.size(); i++) {
-                arr[i] = tagsList.get(i).getTag();
+            user = userDao.findByUsername(username).get(0);
+            if (user == null) {
+                throw new Exception();
             }
-            model.addAttribute("tags", arr);
-            User user1 = userDao.findByUsername(username).get(0);
-            model.addAttribute("currentId", user1.getId());
-            return "createInstruction";
         } catch (Exception e) {
             return "redirect:/startpage";
-        }}
+        }
+        if (check(user.getId())) {
+            try {
+                List<Tags> tagsList = tagsDao.findAll();
+                String[] arr = new String[tagsList.size()];
+                for (int i = 0; i < tagsList.size(); i++) {
+                    arr[i] = tagsList.get(i).getTag();
+                }
+                model.addAttribute("tags", arr);
+                User user1 = userDao.findByUsername(username).get(0);
+                model.addAttribute("currentId", user1.getId());
+                return "createInstruction";
+            } catch (Exception e) {
+                return "redirect:/startpage";
+            }
+        }
         return "redirect:/startpage";
     }
-
-
 
 
     private Instructions instructions;
@@ -249,12 +256,13 @@ public class InstructionsController {
         try {
             User user = userDao.findById(owner);
             user.setNumderInstr(user.getNumderInstr() + 1);
-
+            userDao.save(user);
             if (achivingsDao.findAllByAchivName("instrGod").getThreshold() == user.getNumderInstr()) {
                 UserAchivings userAchivings = new UserAchivings();
                 userAchivings.setAchiv("instrGod");
+                userAchivings.setAchivImg(achivingsDao.findAllByAchivName("instrGod").getAchivImg());
                 userAchivings.setUserId(user.getId());
-                userDao.save(user);
+                userAchivingsDao.save(userAchivings);
             }
         } catch (Exception e) {
             e.getMessage();
@@ -310,11 +318,14 @@ public class InstructionsController {
             return "0";
         }
         user.setNumberComments(user.getNumberComments() + 1);
+        userDao.save(user);
         if (user.getNumberComments() == achivingsDao.findAllByAchivName("commentGod").getThreshold()) {
             UserAchivings userAchivings = new UserAchivings();
             userAchivings.setAchiv("commentGod");
+            userAchivings.setAchivImg(achivingsDao.findAllByAchivName("commentGod").getAchivImg());
             userAchivings.setUserId(user.getId());
-            userDao.save(user);
+            userAchivingsDao.save(userAchivings);
+
         }
         Comments comments = new Comments();
         comments.setContent(content);
@@ -326,7 +337,7 @@ public class InstructionsController {
 
     //----------------
     @RequestMapping(value = "/saveStep", method = RequestMethod.GET)
-    public  void saveStep(@RequestParam String content, @RequestParam int number) {
+    public void saveStep(@RequestParam String content, @RequestParam int number) {
         Step step = new Step();
         step.setContent(content);
         step.setHeading("Step" + number);
@@ -343,14 +354,13 @@ public class InstructionsController {
         model.addAttribute("instruction", instructions);
         List<Step> steps = stepDao.findAllByInstructionsIdOrderByNumber(current);
         List<Comments> comments = commentsDao.findAllByInstructionId(current);
-        String[][] information=new String[comments.size()][5];
-        for(int i=0;i<comments.size();i++)
-        {
-            information[i][0]=userDao.findById(comments.get(i).getOwnerId()).getName();
-            information[i][1]=comments.get(i).getId().toString();
-            information[i][2]=comments.get(i).getContent();
-            information[i][3]=Integer.toString(comments.get(i).getLikes());
-            information[i][4]=userDao.findById(comments.get(i).getOwnerId()).getUsername();
+        String[][] information = new String[comments.size()][5];
+        for (int i = 0; i < comments.size(); i++) {
+            information[i][0] = userDao.findById(comments.get(i).getOwnerId()).getName();
+            information[i][1] = comments.get(i).getId().toString();
+            information[i][2] = comments.get(i).getContent();
+            information[i][3] = Integer.toString(comments.get(i).getLikes());
+            information[i][4] = userDao.findById(comments.get(i).getOwnerId()).getUsername();
         }
 
         model.addAttribute("steps", steps);
@@ -359,13 +369,13 @@ public class InstructionsController {
         } else {
             model.addAttribute("currentStep", steps.get(step - 1));
         }
-        User curruser=null;
+        User curruser = null;
         try {
             curruser = userService.findByUsername(((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()).get(0);
-        }catch(Exception e){
+        } catch (Exception e) {
         }
-        model.addAttribute("user",curruser);
-        model.addAttribute("information",information);
+        model.addAttribute("user", curruser);
+        model.addAttribute("information", information);
         model.addAttribute("lastStep", steps.size());
         return "/viewInstruction";
     }
@@ -437,7 +447,9 @@ public class InstructionsController {
                 throw new Exception();
             }
         } catch (Exception e) {
-
+            if (userId == 0) {
+                return addMark(instrId);
+            }
             Rating rating = new Rating();
             rating.setInstr_id(instrId);
             rating.setUser_id(userId);
@@ -466,5 +478,17 @@ public class InstructionsController {
         return instructions;
     }
 
-
+    @RequestMapping(value = "/lock/{username}", method = RequestMethod.GET)
+    public String lock(@PathVariable("username") String username) {
+        User user = userDao.findByUsername(username).get(0);
+        if (check(user.getId())) {
+            user.setEnabled(!user.getEnabled());
+            userDao.save(user);
+        }
+        User user1 = userService.findByUsername(((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()).get(0);
+        if (user1.getUsername().equals(user.getUsername())) {
+            return "redirect:/login?logout";
+        }
+        return "redirect:/admin";
+    }
 }

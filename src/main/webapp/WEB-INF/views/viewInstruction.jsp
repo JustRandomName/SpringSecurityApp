@@ -58,17 +58,20 @@
 <div class="container">
     <h1 style="text-align: center">${instruction.heading}</h1>
     <p>    ${instruction.content}</p>
-    <div style="display: none" class="steps lbtn-group-vertica" role="group">
-        <c:forEach items="${steps}" var="item">
-            <button type="button" style='font-size: 40px;;' class='btn btn-default' onclick='viewStep("${item.number}")'>
-                Step${item.number}</button>
+    <div style="display: none" class="steps btn-group btn-group-justified" role="group">
+        <div class="btn-group mr-2 col-md-0" role="group" aria-label="First group">
+            <c:forEach items="${steps}" var="item">
+            <span type="button" style="font-size: 15px; cursor: pointer; " class="btn btn-default" onclick='viewStep("${item.number}")'>
+                ${item.number}
             <div id="currentStep"></div>
-        </c:forEach>
+            </span>
+            </c:forEach>
+        </div>
     </div>
     <br>
     <div class="currentStep" style="display: none">
-    <h1 class="step">${currentStep.heading}</h1>
-    <h3 class="step">${currentStep.content}</h3>
+        <h1 class="step">${currentStep.heading}</h1>
+        <h3 class="step">${currentStep.content}</h3>
     </div>
     <div class="arr text-center">
         <span id="prev" class="arrows glyphicon glyphicon-arrow-left pull-left" onclick="prev(${currentStep.number})"></span>
@@ -96,7 +99,6 @@
     </div>
     <style>
         .arr{
-            width: 70%;
         }
         .comments {
             border-top: 1px solid #5bc0de;
@@ -128,7 +130,7 @@
             width: 70%;
         }
         .currentStep{
-            width:70%;
+            width:auto;
             border: 1px dotted #000000;
             border-radius: 7px;
             background-color: rgb(248, 247, 238);
@@ -136,7 +138,7 @@
 
     </style>
     <p><textarea style="resize: none;" rows="4" id="comment"></textarea></p>
-    <button onclick="addComment()">Comment</button>
+    <button class="btn btn-info" onclick="addComment()">Comment</button>
 </div>
 </body>
 
@@ -168,7 +170,7 @@
     }
     function hide(number) {
         if (number === undefined) {
-           document.getElementsByClassName("steps").item(0).style.display='inline-block';
+            document.getElementsByClassName("steps").item(0).style.display='inline-block';
             var prev=document.getElementById("prev");
             prev.removeAttribute("onclick");
             prev.style.cursor="default";
@@ -187,7 +189,7 @@
                 next1.style.cursor="default";
                 next1.style.color="rgba(51, 51, 51, 0.44)";
             }
-                steps[0].style.display = '';
+            steps[0].style.display = '';
         }
     }
     function viewStep(number) {

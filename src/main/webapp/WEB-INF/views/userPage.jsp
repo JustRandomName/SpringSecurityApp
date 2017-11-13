@@ -57,7 +57,7 @@
                 <c:if test="${ROLE==2}">
                     <li><a class="navbar-brand" href="/admin" style="cursor: pointer">Admin Page</a></li>
                 </c:if>
-                    <li><a class="navbar-brand" onclick="seeTags()" style="cursor: pointer">Tags cloud</a></li>
+                <li><a class="navbar-brand" onclick="seeTags()" style="cursor: pointer">Tags cloud</a></li>
 
             </ul>
         </div><!-- /.navbar-collapse -->
@@ -82,7 +82,12 @@
                     </div>
                     <hr>
                     <ul class="container details">
-                        <li><p><span class="glyphicon glyphicon-user one" style="width:50px;"></span></p></li>
+                        <li><p><span class="glyphicon glyphicon-user" style="width:50px;"></span>
+                            <c:forEach items="${achivings}" var="item">
+                            ${item.achivImg}
+                            </c:forEach>
+                        </p>
+                        </li>
                         <li><p><span class="glyphicon glyphicon-envelope one" style="width:50px;"></span>${userName}
                         </p></li>
                     </ul>

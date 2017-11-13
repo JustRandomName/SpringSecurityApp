@@ -34,7 +34,7 @@ public class User {
     private  int numderInstr = 0;
 
     public int getNumderLikes() {
-        return numderLikes = 0;
+        return numderLikes;
     }
 
     public void setNumderLikes(int numderLikes) {

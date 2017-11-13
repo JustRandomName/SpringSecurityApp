@@ -3,9 +3,12 @@ package net.proselyte.springsecurityapp.controller;
 
 import net.proselyte.springsecurityapp.dao.InstructionsDao;
 import net.proselyte.springsecurityapp.dao.StepDao;
+import net.proselyte.springsecurityapp.dao.UserAchivingsDao;
 import net.proselyte.springsecurityapp.dao.UserDao;
 
+import net.proselyte.springsecurityapp.model.Achivings;
 import net.proselyte.springsecurityapp.model.User;
+import net.proselyte.springsecurityapp.model.UserAchivings;
 import net.proselyte.springsecurityapp.service.*;
 import net.proselyte.springsecurityapp.validator.UserValidator;
 import org.json.JSONObject;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import twitter4j.auth.AccessToken;
 import java.lang.*;
 import java.sql.*;
+import java.util.List;
 import java.util.Random;
 
 
@@ -216,11 +220,14 @@ public class UserController {
     }
 ///////////////////////////////////////////////////////////////
     /////////////////////////////////////////
-
+    @Autowired
+    private UserAchivingsDao userAchivingsDao;
     @RequestMapping(value = "/userPage", method = RequestMethod.GET)
     public String add(Model model) {
         try {
             User user = userService.findByUsername(((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()).get(0);
+            List<UserAchivings> userAchivings= userAchivingsDao.findAllByUserId(user.getId());
+            model.addAttribute("achivings",userAchivings);
             model.addAttribute("currentUsername", user.getUsername());
             model.addAttribute("userName", user.getName());
             try {
@@ -408,6 +415,16 @@ public class UserController {
         model.addAttribute("currentUsername",user.getUsername());
         return "/user";
     }
-
+    @RequestMapping(value = "/deleteUser/{username}", method = RequestMethod.GET)
+    public String delUser(@PathVariable("username") String username){
+        User currentUser = userService.findByUsername(((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()).get(0);
+        User user = userDao.findByUsername(username).get(0);
+        if(currentUser.getUsername().equals(user.getUsername())){
+            userDao.delete(user);
+            return "redirect:/login?logout";
+        }
+        userDao.delete(user);
+        return "redirect:/admin";
+    }
 
  }
