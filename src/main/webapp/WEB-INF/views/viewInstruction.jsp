@@ -58,12 +58,15 @@
 <div class="container">
     <h1 style="text-align: center">${instruction.heading}</h1>
     <p>    ${instruction.content}</p>
-    <div style="display: none" class="steps lbtn-group-vertica" role="group">
+    <div style="display: none" class="steps btn-group btn-group-justified" role="group">
+        <div class="btn-group mr-2 col-md-0" role="group" aria-label="First group">
         <c:forEach items="${steps}" var="item">
-            <button type="button" style='font-size: 40px;;' class='btn btn-default' onclick='viewStep("${item.number}")'>
-                Step${item.number}</button>
+            <span type="button" style="font-size: 15px; cursor: pointer; " class="btn btn-default" onclick='viewStep("${item.number}")'>
+                ${item.number}
             <div id="currentStep"></div>
+            </span>
         </c:forEach>
+        </div>
     </div>
     <br>
     <div class="currentStep" style="display: none">
@@ -96,7 +99,6 @@
     </div>
     <style>
         .arr{
-            width: 70%;
         }
         .comments {
             border-top: 1px solid #5bc0de;
@@ -128,7 +130,7 @@
             width: 70%;
         }
         .currentStep{
-            width:70%;
+            width:auto;
             border: 1px dotted #000000;
             border-radius: 7px;
             background-color: rgb(248, 247, 238);
@@ -136,7 +138,7 @@
 
     </style>
     <p><textarea style="resize: none;" rows="4" id="comment"></textarea></p>
-    <button onclick="addComment()">Comment</button>
+    <button class="btn btn-info" onclick="addComment()">Comment</button>
 </div>
 </body>
 

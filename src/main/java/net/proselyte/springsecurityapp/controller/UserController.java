@@ -92,7 +92,7 @@ public class UserController {
             token = "";
             createToken();
             Sender sender=new Sender("tester19990908@gmail.com","warhammer43");
-            sender.send(userForm.getUsername(), "�� ������������������ http://localhost:8087/varification/" + token + "/" + userForm.getUsername(),"tester19990908@gmail.com",userForm.getUsername());
+            sender.send(userForm.getUsername(), "Вы зарегестрировались http://localhost:8087/varification/" + token + "/" + userForm.getUsername(),"tester19990908@gmail.com",userForm.getUsername());
             userForm.setEnabled(Boolean.FALSE);
             userService.save(userForm);
             return "/sendMessage";
