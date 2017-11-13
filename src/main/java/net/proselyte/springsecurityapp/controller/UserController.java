@@ -409,5 +409,17 @@ public class UserController {
         return "/user";
     }
 
+    @RequestMapping(value = "/deleteUser/{username}", method = RequestMethod.GET)
+    public String delUser(@PathVariable("username") String username){
+        User currentUser = userService.findByUsername(((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()).get(0);
+        User user = userDao.findByUsername(username).get(0);
+        if(currentUser.getUsername().equals(user.getUsername())){
+            userDao.delete(user);
+            return "redirect:/login?logout";
+        }
+        userDao.delete(user);
+        return "admin";
+    }
+
 
  }

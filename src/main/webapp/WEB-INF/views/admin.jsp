@@ -90,15 +90,14 @@
                         </c:if>
                         </td>
                         <td>
-                            <div class="btn-group" style  = "display: inline;  weight:auto">
-                                <button type="button" data-toggle="dropdown" class="dropdown-toggle btn - xs"  ><span class="caret" style = "min-width: 0; min-height: 0"></span></button>
-                                <ul class="dropdown-menu" style="min-width:0;" style="color: white">
-                                    <li style="width: 65px"><button style = "width:65px;height: 25px"><span id="Lock${item[1]}" onclick='changeStatusUser("${item[1]}")'>Lock</span></button>
-                                        <br></li>
-                                    <li style="width: 65px"><button style = "width:65px;height: 25px"><span id="MakeAdmin${item[1]}" onclick='makeAdmin("${item[1]}")'>Make Admin</span></button>
-                                    <br></li>
-                                    <li style="width: 65px"><button style = "width:65px;height: 25px"><a id="View${item[1]}" href="/seeInstructions/${item[1]}">View Instructions</a></button>
-                                        <br></li>
+                            <div class="dropdown">
+                                <button class="btn btn-default dropdown-toggle" type="button" id="menu5" data-toggle="dropdown"><span
+                                        class="caret"></span></button>
+                                <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
+                                    <li role="presentation"><a role="menuitem" href="/lock/${item[1]}">Change user status</a></li>
+                                    <li role="presentation"><a role="menuitem" href="/deleteUser/${item[1]}" >Delete user</a></li>
+                                    <li role="presentation"><a role="menuitem" style="cursor: pointer" onclick="makeAdmin(${item[1]})">Make Admin</a></li>
+                                    <li role="presentation"><a role="menuitem" href="/seeInstructions/${item[1]}">View Instructions</a></li>
                                 </ul>
                             </div>
                         </td>

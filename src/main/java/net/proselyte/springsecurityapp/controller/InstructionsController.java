@@ -466,5 +466,20 @@ public class InstructionsController {
         return instructions;
     }
 
+    @RequestMapping(value = "/lock/{username}", method = RequestMethod.GET)
+    public String lock(@PathVariable("username") String username) {
+        User user = userDao.findByUsername(username).get(0);
+        if (check(user.getId())) {
+            user.setEnabled(!user.getEnabled());
+            userDao.save(user);
+        }
+        User user1 = userService.findByUsername(((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()).get(0);
+        if (user1.getUsername().equals(user.getUsername())) {
+            return "redirect:/login?logout";
+        }
+        return "redirect:/admin";
+    }
+
+
 
 }
