@@ -6,12 +6,13 @@
 
 
 
-function defineComment(content,instructionId,commentId,username) {
+function defineComment(content,instructionId,commentId,name,username) {
     window.alert(instructionId);
     var json = JSON.stringify({
         "content": content,
         "instructionId": instructionId,
         "commentId":commentId,
+        "name":name,
         "username":username
     });
     drawComment(json);
@@ -41,8 +42,8 @@ function drawComment(image) {
         like.appendChild(img);
         content.innerText=json.content;
         says.innerText=" says:";
-        username.innerText=json.username;
-        username.href="#";
+        username.innerText=json.name;
+        username.href="/user/"+json.username;
         div.className="posted-comments";
         div.appendChild(username);
         div.appendChild(says);

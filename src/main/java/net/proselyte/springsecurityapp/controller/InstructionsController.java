@@ -64,6 +64,7 @@ public class InstructionsController {
         int i = 0;
         try {
             curruser = userService.findByUsername(((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()).get(0);
+            if(curruser==null){throw new Exception();}
             try {
                 int l;
                 String myDriver = "com.mysql.jdbc.Driver";
@@ -117,7 +118,7 @@ public class InstructionsController {
                 e.getMessage();
             }
 
-            List<Step> steps = stepDao.findAllByInstructionsId(instructionId);
+            List<Step> steps = stepDao.findAllByInstructionsIdOrderByNumber(instructionId);
             model.addAttribute("instruction", instructions);
             model.addAttribute("steps", steps);
             return "/editInstruction";
@@ -148,7 +149,7 @@ public class InstructionsController {
     public void editStep(@RequestParam Long instructionId, @RequestParam int number, @RequestParam String content) {
         number--;
         try {
-            List<Step> steps = stepDao.findAllByInstructionsId(instructionId);
+            List<Step> steps = stepDao.findAllByInstructionsIdOrderByNumber(instructionId);
 
             steps.get(number).setContent(content);
             stepDao.save(steps.get(number));
@@ -157,7 +158,7 @@ public class InstructionsController {
             step.setContent(content);
             step.setInstructionsId(instructionId);
             step.setNumber(number + 1);
-            step.setHeading("LOL");
+            step.setHeading("Step"+(number+1));
             stepDao.save(step);
         }
     }
@@ -202,7 +203,7 @@ public class InstructionsController {
 
     @RequestMapping(value = "/deleteSteps", method = RequestMethod.GET)
     public void deleteSteps(@RequestParam Long instructionId, @RequestParam int number) {
-        List<Step> steps = stepDao.findAllByInstructionsId(instructionId);
+        List<Step> steps = stepDao.findAllByInstructionsIdOrderByNumber(instructionId);
         for (int i = number; i < steps.size(); i++) {
             stepDao.delete(steps.get(i));
         }
@@ -210,6 +211,14 @@ public class InstructionsController {
 
     @RequestMapping(value = "/createInstruction/{username}", method = RequestMethod.GET)
     public String add(@PathVariable("username") String username, Model model) {
+        User user;
+       try{
+            user= userDao.findByUsername(username).get(0);
+            if(user==null){throw new Exception();}
+       }catch (Exception e){
+           return "redirect:/startpage";
+       }
+        if(check(user.getId())){
         try {
             List<Tags> tagsList = tagsDao.findAll();
             String[] arr = new String[tagsList.size()];
@@ -222,7 +231,8 @@ public class InstructionsController {
             return "createInstruction";
         } catch (Exception e) {
             return "redirect:/startpage";
-        }
+        }}
+        return "redirect:/startpage";
     }
 
 
@@ -316,8 +326,7 @@ public class InstructionsController {
 
     //----------------
     @RequestMapping(value = "/saveStep", method = RequestMethod.GET)
-    public @ResponseBody
-    void saveStep(@RequestParam String content, @RequestParam int number) {
+    public  void saveStep(@RequestParam String content, @RequestParam int number) {
         Step step = new Step();
         step.setContent(content);
         step.setHeading("Step" + number);
@@ -332,15 +341,16 @@ public class InstructionsController {
         model.addAttribute("current", current);
         Instructions instructions = instructionsService.findById(current).get(0);
         model.addAttribute("instruction", instructions);
-        List<Step> steps = stepDao.findAllByInstructionsId(current);
+        List<Step> steps = stepDao.findAllByInstructionsIdOrderByNumber(current);
         List<Comments> comments = commentsDao.findAllByInstructionId(current);
-        String[][] information=new String[comments.size()][4];
+        String[][] information=new String[comments.size()][5];
         for(int i=0;i<comments.size();i++)
         {
             information[i][0]=userDao.findById(comments.get(i).getOwnerId()).getName();
             information[i][1]=comments.get(i).getId().toString();
             information[i][2]=comments.get(i).getContent();
             information[i][3]=Integer.toString(comments.get(i).getLikes());
+            information[i][4]=userDao.findById(comments.get(i).getOwnerId()).getUsername();
         }
 
         model.addAttribute("steps", steps);
@@ -391,7 +401,7 @@ public class InstructionsController {
             int i = 0;
             model.addAttribute("user", i);
         }
-        List<Step> steps = stepDao.findAllByInstructionsId(inst_id);
+        List<Step> steps = stepDao.findAllByInstructionsIdOrderByNumber(inst_id);
         Instructions instructions = instructionsDao.findAllById(inst_id);
         User user = userDao.findById(instructions.getOwnerId());
         model.addAttribute("userPage", user);

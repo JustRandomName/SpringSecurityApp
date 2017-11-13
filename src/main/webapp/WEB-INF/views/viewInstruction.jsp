@@ -56,21 +56,23 @@
 </nav>
 <p style="display: none" id="modelAttr">${instruction.id}</p>
 <div class="container">
-    <h1>${instruction.heading}</h1>
-    <p>${instruction.content}</p>
-    <div class="btn-group-vertical" role="group">
+    <h1 style="text-align: center">${instruction.heading}</h1>
+    <p>    ${instruction.content}</p>
+    <div style="display: none" class="steps lbtn-group-vertica" role="group">
         <c:forEach items="${steps}" var="item">
-            <button type="button" class='steps btn btn-default' onclick='viewStep("${item.number}")'>
+            <button type="button" style='font-size: 40px;;' class='btn btn-default' onclick='viewStep("${item.number}")'>
                 Step${item.number}</button>
             <div id="currentStep"></div>
         </c:forEach>
     </div>
     <br>
+    <div class="currentStep" style="display: none">
     <h1 class="step">${currentStep.heading}</h1>
     <h3 class="step">${currentStep.content}</h3>
-    <div class="arr">
-        <span id="first" class="arrows glyphicon glyphicon-fast-backward" onclick="first()"></span>
-        <span id="prev" class="arrows glyphicon glyphicon-arrow-left" onclick="prev(${currentStep.number})"></span>
+    </div>
+    <div class="arr text-center">
+        <span id="prev" class="arrows glyphicon glyphicon-arrow-left pull-left" onclick="prev(${currentStep.number})"></span>
+        <span id="first" style="font-weight: bold" class="arrows" onclick="first()">First</span>
         <span id="next" class="arrows glyphicon glyphicon-arrow-right pull-right" onclick="next(${currentStep.number})"></span>
     </div>
     <br>
@@ -80,7 +82,7 @@
         <br>
         <c:forEach items="${information}" var="item">
             <div class="posted-comments">
-                <a style="" href="#">${item[0]}</a>
+                <a style="" href="/user/${item[4]}">${item[0]}</a>
                 <span> says :</span>
                 <br>
                 <span>${item[2]}</span>
@@ -113,7 +115,6 @@
         }
 
         .posted-comments {
-            width: 70%;
             border: 1px solid #cccccc;
             margin-bottom: 20px;
             margin-left: 0px;
@@ -126,6 +127,13 @@
         textarea#comment {
             width: 70%;
         }
+        .currentStep{
+            width:70%;
+            border: 1px dotted #000000;
+            border-radius: 7px;
+            background-color: rgb(248, 247, 238);
+        }
+
     </style>
     <p><textarea style="resize: none;" rows="4" id="comment"></textarea></p>
     <button onclick="addComment()">Comment</button>
@@ -149,8 +157,7 @@
                 if (str === "0") {
                     window.location.replace("/startpage")
                 } else {
-                    var name = "${user.name}";
-                    defineComment(el.value, ${instruction.id}, str, name);
+                    defineComment(el.value, ${instruction.id}, str, "${user.name}","${user.username}");
                 }
                 el.value = "";
             }
@@ -161,19 +168,26 @@
     }
     function hide(number) {
         if (number === undefined) {
-            var step = document.getElementsByClassName("step");
-            for (var i = 0; i <= step.length; i++) {
-                step[i].style.display = 'none';
-                document.getElementById("prev").style.display = 'none';
+           document.getElementsByClassName("steps").item(0).style.display='inline-block';
+            var prev=document.getElementById("prev");
+            prev.removeAttribute("onclick");
+            prev.style.cursor="default";
+            prev.style.color="rgba(51, 51, 51, 0.44)";
+            if (0 ===${lastStep}) {
+                var next=document.getElementById("next");
+                next.removeAttribute("onclick");
+                next.style.cursor="default";
+                next.style.color="rgba(51, 51, 51, 0.44)";
             }
         } else {
-            var steps = document.getElementsByClassName("steps");
+            var steps = document.getElementsByClassName("currentStep");
             if (number ===${lastStep}) {
-                document.getElementById("next").style.display = 'none';
+                var next1=document.getElementById("next");
+                next1.removeAttribute("onclick");
+                next1.style.cursor="default";
+                next1.style.color="rgba(51, 51, 51, 0.44)";
             }
-            for (var i = 0; i < steps.length; i++) {
-                steps[i].style.display = 'none';
-            }
+                steps[0].style.display = '';
         }
     }
     function viewStep(number) {

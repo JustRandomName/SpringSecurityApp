@@ -80,7 +80,7 @@ public class UserController {
 
     @RequestMapping(value = {"/confirmation{user}"}, method = RequestMethod.GET)
     public String Confirmation (@PathVariable("user")String user){
-        return "redirect:/welcome";
+        return "redirect:/userPage";
     }
 
     @RequestMapping(value = "/registration", method = RequestMethod.POST)
@@ -92,7 +92,7 @@ public class UserController {
             token = "";
             createToken();
             Sender sender=new Sender("tester19990908@gmail.com","warhammer43");
-            sender.send(userForm.getUsername(), "Вы зарегистрировались http://localhost:8087/varification/" + token + "/" + userForm.getUsername(),"tester19990908@gmail.com",userForm.getUsername());
+            sender.send(userForm.getUsername(), "пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ http://localhost:8087/varification/" + token + "/" + userForm.getUsername(),"tester19990908@gmail.com",userForm.getUsername());
             userForm.setEnabled(Boolean.FALSE);
             userService.save(userForm);
             return "/sendMessage";
@@ -149,10 +149,6 @@ public class UserController {
         return "login";
     }
 
-    @RequestMapping(value = {"/", "/welcome"}, method = RequestMethod.GET)
-    public String welcome(Model model) {
-        return "welcome";
-    }
 
     @RequestMapping(value = "/admin", method = RequestMethod.GET)
     public String admin(Model model) {
@@ -312,7 +308,7 @@ public class UserController {
         }
 
         securityService.autoLogin(jSONObject.getString("id"), access_token);
-        return "redirect:/welcome";
+        return "redirect:/userPage";
     }
 
     @RequestMapping(value = "/example", method = RequestMethod.GET)
@@ -364,7 +360,7 @@ public class UserController {
         createToken();
         userNameForRePass ="";
         Sender sender=new Sender("tester19990908@gmail.com","warhammer43");
-        sender.send(username, "Ссылка для сброса пароля http://localhost:8087/newPass/" + token + "/" + username,"tester19990908@gmail.com",username);
+        sender.send(username, "пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ http://localhost:8087/newPass/" + token + "/" + username,"tester19990908@gmail.com",username);
         return "/sendMessage";
     }
 
